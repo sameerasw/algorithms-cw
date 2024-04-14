@@ -4,33 +4,40 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
+    private static final String ANSI_RESET = "\u001B[0m";
+    private static final String ANSI_BLACK_BACKGROUND = "\u001B[40m";
+    private static final String ANSI_RED_BACKGROUND = "\u001B[41m";
+    private static final String ANSI_REVERSED = "\u001b[7m";
+    private static final String ANSI_CYAN = "\u001B[36m";
+    private static final String ANSI_GREEN = "\u001B[32m";
+    private static final String ANSI_BLUE = "\u001B[34m";
 
     public static void printArray(String[] arr) {
         //add a border to the array representation
-        System.out.println("\u001b[41m ".repeat(arr[0].length()*3+4) + "\u001B[0m");
+        System.out.println(ANSI_RED_BACKGROUND + " ".repeat(arr[0].length()*3+4) + ANSI_RESET);
 
         // Print the nested array with element by element
         for (int i = 0; i < arr.length; i++) {
-            System.out.print("\u001b[41m  \u001B[0m");
+            System.out.print(ANSI_RED_BACKGROUND + "  " + ANSI_RESET);
             for (int j = 0; j < arr[i].length(); j++) {
                 printColors(arr[i].charAt(j));
             }
-            System.out.print("\u001b[41m  \u001B[0m\n");
+            System.out.print(ANSI_RED_BACKGROUND + "  " + ANSI_RESET + "\n");
         }
 
         //add a border to the array representation
-        System.out.println("\u001b[41m ".repeat(arr[0].length()*3+4) + "\u001B[0m");
+        System.out.println(ANSI_RED_BACKGROUND + " ".repeat(arr[0].length()*3+4) + ANSI_RESET);
     }
 
     private static void printColors(char c) {
         //change text color depending on the element printed using ANSI escape codes
         switch (c) {
-            case '.' -> System.out.print("\u001B[40m");
-            case '0' -> System.out.print("\u001B[41m");
+            case '.' -> System.out.print(ANSI_BLACK_BACKGROUND);
+            case '0' -> System.out.print(ANSI_RED_BACKGROUND);
             //use background green color for 'F'
-            case 'F' -> System.out.print("\u001b[7m\u001b[1m\u001B[36m");
-            case 'S' -> System.out.print("\u001b[7m\u001b[1m\u001B[32m");
-            case '@' -> System.out.print("\u001b[7m\u001b[1m\u001B[34m");
+            case 'F' -> System.out.print(ANSI_REVERSED+ ANSI_CYAN);
+            case 'S' -> System.out.print(ANSI_REVERSED+ ANSI_GREEN);
+            case '@' -> System.out.print(ANSI_REVERSED+ ANSI_BLUE);
         }
 
         if (c == '0') {
@@ -40,7 +47,7 @@ public class Main {
         }
 
         //reset the color to default
-        System.out.print("\u001B[0m");
+        System.out.print(ANSI_RESET);
     }
 
     public static String[] readFile(String filename) {
