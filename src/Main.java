@@ -14,19 +14,19 @@ public class Main {
 
     public static void printArray(String[] arr) {
         //add a border to the array representation
-        System.out.println(ANSI_RED_BACKGROUND + " ".repeat(arr[0].length()*3+4) + ANSI_RESET);
+        System.out.println(ANSI_RED_BACKGROUND + " ".repeat(arr[0].length()*3+6) + ANSI_RESET);
 
         // Print the nested array with element by element
         for (int i = 0; i < arr.length; i++) {
-            System.out.print(ANSI_RED_BACKGROUND + "  " + ANSI_RESET);
+            System.out.print(ANSI_RED_BACKGROUND + "   " + ANSI_RESET);
             for (int j = 0; j < arr[i].length(); j++) {
                 printColors(arr[i].charAt(j));
             }
-            System.out.print(ANSI_RED_BACKGROUND + "  " + ANSI_RESET + "\n");
+            System.out.print(ANSI_RED_BACKGROUND + "   " + ANSI_RESET + "\n");
         }
 
         //add a border to the array representation
-        System.out.println(ANSI_RED_BACKGROUND + " ".repeat(arr[0].length()*3+4) + ANSI_RESET);
+        System.out.println(ANSI_RED_BACKGROUND + " ".repeat(arr[0].length()*3+6) + ANSI_RESET);
     }
 
     private static void printColors(char c) {
