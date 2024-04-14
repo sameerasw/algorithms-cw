@@ -14,7 +14,7 @@ public class Main {
 
     public static void printArray(String[] arr) {
         //add a border to the array representation
-        System.out.println(ANSI_RED_BACKGROUND + " ".repeat(arr[0].length()*3+6) + ANSI_RESET);
+        System.out.println(ANSI_RED_BACKGROUND + " ".repeat((arr[0].length()+2)*3) + ANSI_RESET);
 
         // Print the nested array with element by element
         for (int i = 0; i < arr.length; i++) {
@@ -26,7 +26,7 @@ public class Main {
         }
 
         //add a border to the array representation
-        System.out.println(ANSI_RED_BACKGROUND + " ".repeat(arr[0].length()*3+6) + ANSI_RESET);
+        System.out.println(ANSI_RED_BACKGROUND + " ".repeat((arr[0].length()+2)*3) + ANSI_RESET);
     }
 
     private static void printColors(char c) {
