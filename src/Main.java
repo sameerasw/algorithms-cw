@@ -20,7 +20,7 @@ public class Main {
         for (int i = 0; i < arr.length; i++) {
             System.out.print(ANSI_RED_BACKGROUND + "   " + ANSI_RESET);
             for (int j = 0; j < arr[i].length(); j++) {
-                printColors(arr[i].charAt(j));
+                printColors(getNode(arr, i, j));
             }
             System.out.print(ANSI_RED_BACKGROUND + "   " + ANSI_RESET + "\n");
         }
@@ -67,6 +67,16 @@ public class Main {
         }
 
         return readings;
+    }
+
+
+    public static char getNode(String[] readings, int x, int y) {
+        //return the node at the given x and y coordinates
+        if (x < 0 || y < 0 || x >= readings.length || y >= readings[0].length()) {
+            //if it's out of range return 0
+            return '0';
+        }
+        return readings[x].charAt(y);
     }
 
     public static void main(String[] args) {
