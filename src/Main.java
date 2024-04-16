@@ -94,39 +94,85 @@ public class Main {
         int direction = 0;
         ArrayList<int[]> history = new ArrayList<>();
         boolean keepLooking = true;
+        history.add(new int[]{nodeInfo[0], nodeInfo[1], direction});
 
         while (keepLooking) {
 
             //add the new position to the history with the direction as a stack
-            history.add(new int[]{nodeInfo[0], nodeInfo[1], direction});
+//            history.add(new int[]{nodeInfo[0], nodeInfo[1], direction});
+
+            //print the history
+            printHistory(history);
 
             System.out.println("searching started");
+            int[] prevPosition = new int[]{nodeInfo[0], nodeInfo[1]};
+
             //move the player to the given direction
             ArrayList output = movePlayer(readings, nodeInfo[0], nodeInfo[1], direction);
             readings = (String[]) output.get(0);
             nodeInfo = (int[]) output.get(1);
 
+            System.out.println("previous node: " + Arrays.toString(prevPosition) + " current node: " + Arrays.toString(nodeInfo));
+
+            //if the new node is different from the previous node update the nodeInfo and reset the direction to 0
+            if (prevPosition[0] != nodeInfo[0] || prevPosition[1] != nodeInfo[1]) {
+                nodeInfo = (int[]) output.get(1);
+                direction = 0;
+                System.out.println("node changed, direction reset");
+            } else {
+                //if the new node is the same as the previous node update the direction
+                direction++;
+                System.out.println("node is the same, direction updated");
+            }
+
+            //add the new position to the history with the direction as a stack
+            history.add(new int[]{nodeInfo[0], nodeInfo[1], direction});
 
             //if the player hits the finish node return the path
             if (getNode(readings, nodeInfo[0], nodeInfo[1]) == 'F') {
                 return "Path found: " + history;
-            } else if (history.size() > 0 && direction < 3) {
-                direction++;
-            } else if (history.size() > 0 && direction == 3) {
-                //if the player hits a wall or a visited node pop the last element from the history and move the player to the previous position
-                int[] last = history.get(history.size() - 1);
-                history.remove(history.size() - 1);
-                nodeInfo = new int[]{last[0], last[1]};
-                direction = last[2]+1;
+            } else if (direction < 3) {
+                //if the player hits a wall or a visited node change the direction if the direction is less than 3
+//                direction++;
+            } else if (history.size() != 2 && direction == 3) {
+                //if the player hits a wall or a visited node and the direction is 3 go back to the previous node
+                int[] previousNode = history.getLast();
+
+                //remove the last elements from he history where the node is the same as the previous node
+                while (!history.isEmpty() && history.getLast()[0] == previousNode[0] && history.getLast()[1] == previousNode[1]) {
+                    history.removeLast();
+                }
+
+                try {
+                    nodeInfo = new int[]{history.getLast()[0], history.getLast()[1]};
+                } catch (Exception e) {
+                    System.out.println("No path found.");
+                    return "No path found.";
+                }
+                direction = history.getLast()[2];
+                System.out.println("History size:" + history.size());
+
+                System.out.println("Going back to the previous node");
 //                keepLooking = false;
             } else {
                 keepLooking = false;
+                System.out.println("nowhere to go");
             }
 
 //            keepLooking = false;
         }
-        System.out.println(direction);
+        printHistory(history);
+        System.out.println("current node: " + Arrays.toString(nodeInfo));
+        System.out.println("current direction: " + direction);
         return "No path found.";
+    }
+
+    public static void printHistory(ArrayList<int[]> history) {
+        //print the history in a readable format
+        System.out.println("History: ");
+        for (int[] node : history) {
+//            System.out.println(Arrays.toString(node));
+        }
     }
 
     public static ArrayList movePlayer(String[] readings, int x, int y, int direction) {
@@ -135,8 +181,9 @@ public class Main {
         ArrayList<Object> output = new ArrayList<>();
         output.add(readings);
         output.add(currentPosition);
+        output.add(direction);
 
-        while (getNode(readings, currentPosition[0], currentPosition[1]) != '0') {
+        while (true) {
 
             switch (direction) {
                 case 0 -> currentPosition[1] -= 1;
@@ -151,23 +198,39 @@ public class Main {
             if (getNode(readings, currentPosition[1], currentPosition[0]) == 'F') {
                 //set the output array to the new readings and the new position of the player as a nested array
                 output.set(1, currentPosition);
+                output.set(0, readings);
+                output.set(2, direction);
                 System.out.println("Found the finish node");
                 return output;
-            } else if (getNode(readings, currentPosition[1], currentPosition[0]) == '0') {
+            } else if (getNode(readings, currentPosition[1], currentPosition[0]) == '0'){
                 //if the player hits a wall return the array
                 System.out.println("Hit a wall");
+
+                //go back a step
+                switch (direction) {
+                    case 0 -> currentPosition[1] += 1;
+                    case 1 -> currentPosition[0] -= 1;
+                    case 2 -> currentPosition[1] -= 1;
+                    case 3 -> currentPosition[0] += 1;
+                }
+
                 return output;
             } else {
-                //if the player hits a empty or visited node update the current visited node with @
-                readings[currentPosition[1]] = readings[currentPosition[1]].substring(0, currentPosition[0]) + "@" + readings[currentPosition[1]].substring(currentPosition[0] + 1);
+                //if the player hits a empty or visited node update the current visited node with @ if it's not the start node or the finish node
+                if (getNode(readings, currentPosition[1], currentPosition[0]) != 'S' && getNode(readings, currentPosition[1], currentPosition[0]) != 'F'){
+                    readings[currentPosition[1]] = readings[currentPosition[1]].substring(0, currentPosition[0]) + "@" + readings[currentPosition[1]].substring(currentPosition[0] + 1);
+                }
                 output.set(0, readings);
-                System.out.println("Visited node: " + Arrays.toString(currentPosition));
+                System.out.println("Keep moving to direction: " + direction);
+                //reset the direction to 0
+//                direction = 0;
+//                System.out.println("Visited node: " + Arrays.toString(currentPosition));
             }
 
             printArray(readings);
         }
 
-        return output;
+//        return output;
     }
 
     public static void main(String[] args) {
