@@ -156,7 +156,7 @@ public class Main {
                 //update the nodeInfo and direction to the previous node
                 nodeInfo = new int[]{previousNode[0], previousNode[1]};
                 direction = previousNode[2];
-//                keepLooking = false;
+                keepLooking = false; //-------------------------------------------------------------KILL SWITCH
             } else if (nodeInfo[0] == start[0] && nodeInfo[1] == start[1] && direction == 3){
                 keepLooking = false;
                 System.out.println("Nowhere to go, No path found.");
