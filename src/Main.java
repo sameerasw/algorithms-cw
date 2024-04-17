@@ -130,92 +130,6 @@ public class Main {
         System.out.println("Finishing node: " + finish[0] + ", " + finish[1]);
     }
 
-
-    public static String shortestPath(String[] readings, int[] nodeInfo) {
-        //implement the shortest path algorithm
-        int direction = 0;
-        ArrayList<int[]> history = new ArrayList<>();
-        ArrayList<int[]> fullHistory = new ArrayList<>();
-        boolean keepLooking = true;
-
-        int[] start = new int[]{nodeInfo[0], nodeInfo[1]};
-
-        history.add(new int[]{nodeInfo[0], nodeInfo[1], -1});
-        fullHistory.add(new int[]{nodeInfo[0], nodeInfo[1], -1});
-//        printHistory(history);
-
-        while (keepLooking) {
-
-            System.out.println("\n" + ANSI_GREEN + ANSI_REVERSED + "searching started" + ANSI_RESET);
-            int[] prevPosition = new int[]{nodeInfo[0], nodeInfo[1]};
-
-            //move the player to the given direction
-            if (inHistory(fullHistory, nodeInfo, direction)) {
-                System.out.println("Node already visited, reverting to previous node");
-                direction++;
-            } else {
-                ArrayList output = movePlayer(readings, nodeInfo[0], nodeInfo[1], direction, history);
-                readings = (String[]) output.get(0);
-                nodeInfo = (int[]) output.get(1);
-                direction = (int) output.get(2);
-            }
-
-            System.out.println("previous node: " + Arrays.toString(prevPosition) + " → current node: " + Arrays.toString(nodeInfo));
-
-
-            //if the new node is different from the previous node update the nodeInfo and reset the direction to 0
-            if (prevPosition[0] != nodeInfo[0] || prevPosition[1] != nodeInfo[1]) {
-//                nodeInfo = (int[]) output.get(1);
-
-                //add the new position to the history with the direction as a stack
-                history.add(new int[]{prevPosition[0], prevPosition[1], direction});
-                fullHistory.add(new int[]{prevPosition[0], prevPosition[1], direction});
-
-//                printHistory(history);
-
-                direction = 0;
-                System.out.println("node changed, direction reset");
-
-            }
-
-
-            //if the player hits the finish node return the path
-            if (getNode(readings, nodeInfo[1], nodeInfo[0]) == 'F') {
-                //clear the console
-                System.out.println("\033[H\033[2J");
-                System.out.flush();
-
-                //print the final array
-                printArray(readings);
-                printFinalPath(history, start, new int[]{nodeInfo[0], nodeInfo[1]});
-                return "Path found";
-
-            } else if (((nodeInfo[0] != start[0] || nodeInfo[1] != start[1]) || history.size() > 1 )  && direction == 4) {
-                //if the player hits a wall or a visited node and the direction is 3 go back to the previous node
-                int[] previousNode = history.getLast();
-
-                //remove the last elements from the history where the node is the same as the previous node
-                while (!history.isEmpty() && history.getLast()[0] == previousNode[0] && history.getLast()[1] == previousNode[1]) {
-                    history.removeLast();
-                }
-
-                System.out.println("Reverted history to previous checkpoint");
-//                printHistory(history);
-
-                //update the nodeInfo and direction to the previous node
-                nodeInfo = new int[]{previousNode[0], previousNode[1]};
-                direction = previousNode[2];
-//                keepLooking = false; //-------------------------------------------------------------KILL SWITCH
-            } else if (nodeInfo[0] == start[0] && nodeInfo[1] == start[1] && direction == 4) {
-                keepLooking = false;
-                System.out.println("Nowhere to go, No path found.");
-            }
-
-//            keepLooking = false;
-        }
-        return "No path found.";
-    }
-
     public static ArrayList<Object> movePlayer(String[] readings, int x, int y, int direction, ArrayList<int[]> history) {
         //move the player from the current position to the given direction until it hits a wall (0) and return the new array and the new position of the player as a nested array
         int[] currentPosition = new int[]{x, y};
@@ -299,6 +213,89 @@ public class Main {
 
             printArray(readings);
         }
+    }
+
+    public static String shortestPath(String[] readings, int[] nodeInfo) {
+        //implement the shortest path algorithm
+        int direction = 0;
+        ArrayList<int[]> history = new ArrayList<>();
+        ArrayList<int[]> fullHistory = new ArrayList<>();
+        boolean keepLooking = true;
+
+        int[] start = new int[]{nodeInfo[0], nodeInfo[1]};
+
+        history.add(new int[]{nodeInfo[0], nodeInfo[1], -1});
+        fullHistory.add(new int[]{nodeInfo[0], nodeInfo[1], -1});
+//        printHistory(history);
+
+        while (keepLooking) {
+
+            System.out.println("\n" + ANSI_GREEN + ANSI_REVERSED + "searching started" + ANSI_RESET);
+            int[] prevPosition = new int[]{nodeInfo[0], nodeInfo[1]};
+
+            //move the player to the given direction
+            if (inHistory(fullHistory, nodeInfo, direction)) {
+                System.out.println("Node already visited, reverting to previous node");
+                direction++;
+            } else {
+                ArrayList output = movePlayer(readings, nodeInfo[0], nodeInfo[1], direction, history);
+                readings = (String[]) output.get(0);
+                nodeInfo = (int[]) output.get(1);
+                direction = (int) output.get(2);
+            }
+
+            System.out.println("previous node: " + Arrays.toString(prevPosition) + " → current node: " + Arrays.toString(nodeInfo));
+
+
+            //if the new node is different from the previous node update the nodeInfo and reset the direction to 0
+            if (prevPosition[0] != nodeInfo[0] || prevPosition[1] != nodeInfo[1]) {
+                //add the new position to the history with the direction as a stack
+                history.add(new int[]{prevPosition[0], prevPosition[1], direction});
+                fullHistory.add(new int[]{prevPosition[0], prevPosition[1], direction});
+
+//                printHistory(history);
+
+                direction = 0;
+                System.out.println("node changed, direction reset");
+
+            }
+
+
+            //if the player hits the finish node return the path
+            if (getNode(readings, nodeInfo[1], nodeInfo[0]) == 'F') {
+                //clear the console
+                System.out.println("\033[H\033[2J");
+                System.out.flush();
+
+                //print the final array
+                printArray(readings);
+                printFinalPath(history, start, new int[]{nodeInfo[0], nodeInfo[1]});
+                return "Path found";
+
+            } else if (((nodeInfo[0] != start[0] || nodeInfo[1] != start[1]) || history.size() > 1 )  && direction == 4) {
+                //if the player hits a wall or a visited node and the direction is 3 go back to the previous node
+                int[] previousNode = history.getLast();
+
+                //remove the last elements from the history where the node is the same as the previous node
+                while (!history.isEmpty() && history.getLast()[0] == previousNode[0] && history.getLast()[1] == previousNode[1]) {
+                    history.removeLast();
+                }
+
+                System.out.println("Reverted history to previous checkpoint");
+//                printHistory(history);
+
+                //update the nodeInfo and direction to the previous node
+                nodeInfo = new int[]{previousNode[0], previousNode[1]};
+                direction = previousNode[2];
+
+//                keepLooking = false; //-------------------------------------------------------------KILL SWITCH
+
+            } else if (nodeInfo[0] == start[0] && nodeInfo[1] == start[1] && direction == 4) {
+                keepLooking = false;
+                System.out.println("Nowhere to go, No path found.");
+            }
+        }
+        return "No path found.";
     }
 
     public static void main(String[] args) {
