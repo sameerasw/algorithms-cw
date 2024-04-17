@@ -1,4 +1,3 @@
-import javax.swing.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -77,7 +76,6 @@ public class Main {
             scanner.close();
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred. File not found. at " + filename);
-            e.printStackTrace();
         }
 
         return readings;
@@ -139,13 +137,12 @@ public class Main {
         ArrayList<int[]> history = new ArrayList<>();
         ArrayList<int[]> fullHistory = new ArrayList<>();
         boolean keepLooking = true;
-        int iterations = 0;
 
         int[] start = new int[]{nodeInfo[0], nodeInfo[1]};
 
         history.add(new int[]{nodeInfo[0], nodeInfo[1], -1});
         fullHistory.add(new int[]{nodeInfo[0], nodeInfo[1], -1});
-        printHistory(history);
+//        printHistory(history);
 
         while (keepLooking) {
 
@@ -161,7 +158,6 @@ public class Main {
                 readings = (String[]) output.get(0);
                 nodeInfo = (int[]) output.get(1);
                 direction = (int) output.get(2);
-                iterations = (int) output.get(3);
             }
 
             System.out.println("previous node: " + Arrays.toString(prevPosition) + " → current node: " + Arrays.toString(nodeInfo));
@@ -175,7 +171,7 @@ public class Main {
                 history.add(new int[]{prevPosition[0], prevPosition[1], direction});
                 fullHistory.add(new int[]{prevPosition[0], prevPosition[1], direction});
 
-                printHistory(history);
+//                printHistory(history);
 
                 direction = 0;
                 System.out.println("node changed, direction reset");
@@ -204,13 +200,13 @@ public class Main {
                 }
 
                 System.out.println("Reverted history to previous checkpoint");
-                printHistory(history);
+//                printHistory(history);
 
                 //update the nodeInfo and direction to the previous node
                 nodeInfo = new int[]{previousNode[0], previousNode[1]};
                 direction = previousNode[2];
 //                keepLooking = false; //-------------------------------------------------------------KILL SWITCH
-            } else if ((nodeInfo[0] == start[0] && nodeInfo[1] == start[1] && direction == 4) && history.size() < 2) {
+            } else if (nodeInfo[0] == start[0] && nodeInfo[1] == start[1] && direction == 4) {
                 keepLooking = false;
                 System.out.println("Nowhere to go, No path found.");
             }
@@ -220,7 +216,7 @@ public class Main {
         return "No path found.";
     }
 
-    public static ArrayList movePlayer(String[] readings, int x, int y, int direction, ArrayList history) {
+    public static ArrayList<Object> movePlayer(String[] readings, int x, int y, int direction, ArrayList<int[]> history) {
         //move the player from the current position to the given direction until it hits a wall (0) and return the new array and the new position of the player as a nested array
         int[] currentPosition = new int[]{x, y};
         ArrayList<Object> output = new ArrayList<>();
