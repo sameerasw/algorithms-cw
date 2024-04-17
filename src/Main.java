@@ -13,6 +13,9 @@ public class Main {
     private static final String ANSI_GREEN = "\u001B[32m";
     private static final String ANSI_BLUE = "\u001B[34m";
 
+    //set logging to true to print the array at each step
+    public static final boolean logging = false;
+
     public static int[] printArray(String[] arr) {
         //add a border to the array representation
         System.out.println(ANSI_RED_BACKGROUND + " ".repeat((arr[0].length()+2)*3) + ANSI_RESET);
@@ -110,7 +113,7 @@ public class Main {
 
     public static void printFinalPath(ArrayList<int[]> history, int[] start, int[] finish) {
         //print the final path in a readable format with directional arrows
-        System.out.println("Final path: ");
+        System.out.println("\nFinal path: ");
         System.out.println("Starting node: " + start[0] + ", " + start[1]);
         for (int i = 0; i < history.size(); i++) {
             int[] node = history.get(i);
@@ -146,7 +149,7 @@ public class Main {
 
         lastDirection = ((int[]) history.getLast())[2];
         if ((lastDirection+2)%4 == direction  && lastDirection != -1){
-            System.out.println("Opposite direction, skipped" + direction + " " + lastDirection);
+            if (logging) { System.out.println("Opposite direction, skipped" + direction + " " + lastDirection); }
             direction++;
             output.set(2, direction);
             output.set(3, iterations);
@@ -163,7 +166,7 @@ public class Main {
 
             String nodeResult = String.valueOf(getNode(readings, currentPosition[1], currentPosition[0]));
 
-            System.out.println("Checking node: " + Arrays.toString(currentPosition) + " moving: " + direction + " node: " + nodeResult);
+            if (logging) { System.out.println("Checking node: " + Arrays.toString(currentPosition) + " moving: " + direction + " node: " + nodeResult); }
 
             //if the player hits the finish node return the array
             if (nodeResult.equals("F")) {
@@ -177,7 +180,7 @@ public class Main {
 
             } else if (nodeResult.equals("0")){
                 //if the player hits a wall return the array
-                System.out.println("Hit a wall");
+                if (logging) { System.out.println("Hit a wall"); }
 
                 //go back a step
                 switch (direction) {
@@ -207,11 +210,11 @@ public class Main {
                 output.set(0, readings);
                 output.set(1, currentPosition);
                 output.set(3, iterations);
-                System.out.println("Keep moving to direction: " + direction);
+                if (logging) { System.out.println("Keep moving to direction: " + direction); }
                 iterations++;
             }
 
-            printArray(readings);
+//            printArray(readings);
         }
     }
 
@@ -226,25 +229,25 @@ public class Main {
 
         history.add(new int[]{nodeInfo[0], nodeInfo[1], -1});
         fullHistory.add(new int[]{nodeInfo[0], nodeInfo[1], -1});
-//        printHistory(history);
+        if (logging) { printHistory(history); }
 
         while (keepLooking) {
 
-            System.out.println("\n" + ANSI_GREEN + ANSI_REVERSED + "searching started" + ANSI_RESET);
+            if (logging) { System.out.println("\n" + ANSI_GREEN + ANSI_REVERSED + "searching started" + ANSI_RESET); }
             int[] prevPosition = new int[]{nodeInfo[0], nodeInfo[1]};
 
             //move the player to the given direction
             if (inHistory(fullHistory, nodeInfo, direction)) {
-                System.out.println("Node already visited, reverting to previous node");
+                if (logging) { System.out.println("Node already visited, reverting to previous node"); }
                 direction++;
             } else {
-                ArrayList output = movePlayer(readings, nodeInfo[0], nodeInfo[1], direction, history);
+                ArrayList<Object> output = movePlayer(readings, nodeInfo[0], nodeInfo[1], direction, history);
                 readings = (String[]) output.get(0);
                 nodeInfo = (int[]) output.get(1);
                 direction = (int) output.get(2);
             }
 
-            System.out.println("previous node: " + Arrays.toString(prevPosition) + " → current node: " + Arrays.toString(nodeInfo));
+            if (logging) { System.out.println("previous node: " + Arrays.toString(prevPosition) + " → current node: " + Arrays.toString(nodeInfo)); }
 
 
             //if the new node is different from the previous node update the nodeInfo and reset the direction to 0
@@ -256,7 +259,7 @@ public class Main {
 //                printHistory(history);
 
                 direction = 0;
-                System.out.println("node changed, direction reset");
+                if (logging) { System.out.println("node changed, direction reset"); }
 
             }
 
@@ -281,8 +284,8 @@ public class Main {
                     history.removeLast();
                 }
 
-                System.out.println("Reverted history to previous checkpoint");
-//                printHistory(history);
+                if (logging) { System.out.println("Reverted history to previous checkpoint"); }
+//                if (logging) { printHistory(history); }
 
                 //update the nodeInfo and direction to the previous node
                 nodeInfo = new int[]{previousNode[0], previousNode[1]};
