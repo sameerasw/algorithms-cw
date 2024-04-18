@@ -143,15 +143,23 @@ public class Main {
         return false;
     }
 
-    public static void finalResult(ArrayList<int[]> history, int[] start, int[] finish, String[] readings) {
+    public static void finalResult(ArrayList<Object[]> result) {
+
+        //if the result is empty print a message and return
+        if (result.isEmpty()) {
+            System.out.println("No path found.");
+            return;
+        } else {
+            //extract the shortest path from the result
+        }
 
         //clear the console
         System.out.println("\033[H\033[2J");
         System.out.flush();
 
         //print the final array
-        printArray(readings);
-        printFinalPath(history, start, finish);
+        printArray((String[]) result.getFirst()[3]);
+        printFinalPath((ArrayList<int[]>) result.getFirst()[0], (int[]) result.getFirst()[1], (int[]) result.getFirst()[2]);
     }
 
     public static void printFinalPath(ArrayList<int[]> history, int[] start, int[] finish) {
@@ -192,7 +200,10 @@ public class Main {
 
         int lastDirection = 0;
 
-        lastDirection = ((int[]) history.getLast())[2];
+        if (!history.isEmpty()) {
+            lastDirection = ((int[]) history.getLast())[2];
+        }
+
         if ((lastDirection+2)%4 == direction  && lastDirection != -1){
             if (logging) { System.out.println("Opposite direction, skipped" + direction + " " + lastDirection); }
             direction++;
@@ -269,6 +280,7 @@ public class Main {
         int direction = 0;
         ArrayList<int[]> history = new ArrayList<>();
         ArrayList<int[]> fullHistory = new ArrayList<>();
+        ArrayList<Object[]> results = new ArrayList<>();
         boolean keepLooking = true;
         int moves = 0;
 
@@ -314,18 +326,26 @@ public class Main {
 
 
 
-            if (((nodeInfo[0] != start[0] || nodeInfo[1] != start[1]) || history.size() > 1 )  && direction == 4) {
+            //if the player hits the finish node return the path
+            if (getNode(readings, nodeInfo[1], nodeInfo[0]) == 'F') {
+                //add the finish node to the history
+                history.add(new int[]{nodeInfo[0], nodeInfo[1], direction, (history.getLast()[3] + moves)});
+                fullHistory.add(new int[]{nodeInfo[0], nodeInfo[1], direction});
+
+                //add current history, start and finish nodes to the final result
+                results.add(new Object[]{history, start, new int[]{nodeInfo[0], nodeInfo[1]}, readings});
+
+                history.removeLast();
+
+                //revert the current node to the previous node
+                nodeInfo = new int[]{history.getLast()[0], history.getLast()[1]};
+                direction = history.getLast()[2];
+
+//                    return;
+            }
+
+            if (((nodeInfo[0] != start[0] || nodeInfo[1] != start[1]) ||  history.size() > 1 )  && direction == 4) {
                 //if the player hits a wall or a visited node and the direction is 3 go back to the previous node
-
-                //if the player hits the finish node return the path
-                if (getNode(readings, nodeInfo[1], nodeInfo[0]) == 'F') {
-                    //add the finish node to the history
-                    history.add(new int[]{nodeInfo[0], nodeInfo[1], direction, (history.getLast()[3] + moves)});
-                    fullHistory.add(new int[]{nodeInfo[0], nodeInfo[1], direction});
-
-                    finalResult(history, start, new int[]{nodeInfo[0], nodeInfo[1]}, readings);
-                    return;
-                }
 
                 int[] previousNode = history.getLast();
 
@@ -345,7 +365,8 @@ public class Main {
 
             } else if (nodeInfo[0] == start[0] && nodeInfo[1] == start[1] && direction == 4) {
                 keepLooking = false;
-                System.out.println("Nowhere to go, No path found.");
+                System.out.println("Nowhere to go.");
+                finalResult(results);
             }
         }
     }
