@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -14,7 +15,8 @@ public class Main {
     private static final String ANSI_BLUE = "\u001B[34m";
 
     //set logging to true to print the array at each step
-    public static final boolean logging = false;
+    public static final boolean logging = true;
+    public static final boolean fullLogging = true;
 
     public static int[] printArray(String[] arr) {
         //add a border to the array representation
@@ -58,7 +60,9 @@ public class Main {
 
         if (c == '0') {
             System.out.print("   ");
-        } else {
+        } else if (c == '.') {
+            System.out.print("   ");
+        } else{
             System.out.print(" " + c + " ");
         }
 
@@ -66,23 +70,51 @@ public class Main {
         System.out.print(ANSI_RESET);
     }
 
-    public static String[] readFile(String filename) {
-        // Read the file and return the content as a string array and return as an array using scanner
-        String[] readings = new String[0];
-        try {
-            Scanner scanner = new Scanner(new File(filename));
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                readings = Arrays.copyOf(readings, readings.length + 1);
-                readings[readings.length - 1] = line;
-            }
-            scanner.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("An error occurred. File not found. at " + filename);
-        }
+    public static String[] readFile() {
+    // Read the file and return the content as a string array and return as an array using scanner
 
-        return readings;
+    //look for data.txt and if it's not found open a file picker
+    File file = new File("data.txt");
+    String filename;
+    if (file.exists()) {
+        System.out.println("File found: " + file.getName());
+        filename = file.getName();
+    } else {
+        System.out.println("File not found, opening file picker");
+
+        //open file picker
+        FileDialog dialog = new FileDialog((Frame)null, "Select File to Open");
+        dialog.setMode(FileDialog.LOAD);
+        dialog.setVisible(true);
+        filename = dialog.getFile();
+        if (filename == null) {
+            System.out.println("You cancelled the choice");
+            System.exit(0);
+        } else {
+            System.out.println("You chose " + dialog.getDirectory() + filename);
+        }
     }
+
+    String[] readings = new String[0];
+    try {
+        Scanner scanner = new Scanner(new File(filename));
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            readings = Arrays.copyOf(readings, readings.length + 1);
+            readings[readings.length - 1] = line;
+        }
+        scanner.close();
+    } catch (FileNotFoundException e) {
+        System.out.println("An error occurred while reading " + filename);
+    }
+
+    //strip spaces from the array
+    for (int i = 0; i < readings.length; i++) {
+        readings[i] = readings[i].strip();
+    }
+
+    return readings;
+}
 
     public static char getNode(String[] readings, int x, int y) {
         //return the node at the given x and y coordinates
@@ -214,7 +246,7 @@ public class Main {
                 iterations++;
             }
 
-//            printArray(readings);
+            if (fullLogging) { printArray(readings); }
         }
     }
 
@@ -302,10 +334,10 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        System.out.println("Program started.");
+        System.out.println("Program started. Pick the file");
 
         //read the file
-        String[] readings = readFile("data.txt");
+        String[] readings = readFile();
 
         //print the array
         int[] nodeInfo = printArray(readings);
