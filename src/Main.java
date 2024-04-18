@@ -16,7 +16,14 @@ public class Main {
 
     //set logging to true to print the array at each step
     public static final boolean logging = false;
-    public static final boolean fullLogging = false;
+    public static boolean fullLogging = true;
+
+    //if logging is disabled, disable fullLogging
+    static {
+        if (!logging) {
+            fullLogging = false;
+        }
+    }
 
     public static int[] printArray(String[] arr) {
         //add a border to the array representation
@@ -200,12 +207,12 @@ public class Main {
 
         int lastDirection = 0;
 
-        if (!history.isEmpty()) {
+        if (history.size() > 1) {
             lastDirection = ((int[]) history.getLast())[2];
         }
 
-        if ((lastDirection+2)%4 == direction  && lastDirection != -1){
-            if (logging) { System.out.println("Opposite direction, skipped" + direction + " " + lastDirection); }
+        if (((lastDirection+2)%4 == direction  && lastDirection != -1) && history.size() > 1){
+            if (logging) { System.out.println("Opposite direction, skipped : tried: " + direction + ". Last: " + lastDirection); }
             direction++;
             output.set(2, direction);
             output.set(3, moves);
@@ -279,7 +286,7 @@ public class Main {
         //implement the shortest path algorithm
         int direction = 0;
         ArrayList<int[]> history = new ArrayList<>();
-        ArrayList<int[]> fullHistory = new ArrayList<>();
+//        ArrayList<int[]> fullHistory = new ArrayList<>();
         ArrayList<Object[]> results = new ArrayList<>();
         boolean keepLooking = true;
         int moves = 0;
@@ -287,7 +294,7 @@ public class Main {
         int[] start = new int[]{nodeInfo[0], nodeInfo[1]};
 
         history.add(new int[]{nodeInfo[0], nodeInfo[1], -1, 0});
-        fullHistory.add(new int[]{nodeInfo[0], nodeInfo[1], -1});
+//        fullHistory.add(new int[]{nodeInfo[0], nodeInfo[1], -1});
         if (logging) { printHistory(history); }
 
         while (keepLooking) {
@@ -296,10 +303,10 @@ public class Main {
             int[] prevPosition = new int[]{nodeInfo[0], nodeInfo[1]};
 
             //move the player to the given direction
-            if (inHistory(fullHistory, nodeInfo, direction)) {
+            if (inHistory(history, nodeInfo, direction)) {
                 if (logging) { System.out.println("Node already visited, reverting to previous node"); }
                 direction++;
-            } else {
+            } else if( direction < 4) {
                 ArrayList<Object> output = movePlayer(readings, nodeInfo[0], nodeInfo[1], direction, history);
                 readings = (String[]) output.get(0);
                 nodeInfo = (int[]) output.get(1);
@@ -311,10 +318,10 @@ public class Main {
 
 
             //if the new node is different from the previous node update the nodeInfo and reset the direction to 0
-            if (prevPosition[0] != nodeInfo[0] || prevPosition[1] != nodeInfo[1]) {
+            if ((prevPosition[0] != nodeInfo[0] || prevPosition[1] != nodeInfo[1]) && (getNode(readings, nodeInfo[1], nodeInfo[0]) != 'F')) {
                 //add the new position to the history with the direction as a stack
                 history.add(new int[]{prevPosition[0], prevPosition[1], direction, (history.getLast()[3] + moves)});
-                fullHistory.add(new int[]{prevPosition[0], prevPosition[1], direction});
+//                fullHistory.add(new int[]{prevPosition[0], prevPosition[1], direction});
 
                 if (fullLogging) { printHistory(history); }
 
@@ -328,18 +335,21 @@ public class Main {
 
             //if the player hits the finish node return the path
             if (getNode(readings, nodeInfo[1], nodeInfo[0]) == 'F') {
-                //add the finish node to the history
+                //add the previous node and the finish node to the history
+                history.add(new int[]{prevPosition[0], prevPosition[1], direction, (history.getLast()[3] + moves)});
                 history.add(new int[]{nodeInfo[0], nodeInfo[1], direction, (history.getLast()[3] + moves)});
-                fullHistory.add(new int[]{nodeInfo[0], nodeInfo[1], direction});
+//                fullHistory.add(new int[]{nodeInfo[0], nodeInfo[1], direction});
 
                 //add current history, start and finish nodes to the final result
                 results.add(new Object[]{history, start, new int[]{nodeInfo[0], nodeInfo[1]}, readings});
+
 
                 history.removeLast();
 
                 //revert the current node to the previous node
                 nodeInfo = new int[]{history.getLast()[0], history.getLast()[1]};
-                direction = history.getLast()[2];
+                direction = history.getLast()[2] + 1;
+                history.removeLast();
 
 //                    return;
             }
@@ -350,7 +360,7 @@ public class Main {
                 int[] previousNode = history.getLast();
 
                 //remove the last elements from the history where the node is the same as the previous node
-                while (!history.isEmpty() && history.getLast()[0] == previousNode[0] && history.getLast()[1] == previousNode[1]) {
+                if (!history.isEmpty() && history.getLast()[0] == previousNode[0] && history.getLast()[1] == previousNode[1]) {
                     history.removeLast();
                 }
 
@@ -359,7 +369,7 @@ public class Main {
 
                 //update the nodeInfo and direction to the previous node
                 nodeInfo = new int[]{previousNode[0], previousNode[1]};
-                direction = previousNode[2];
+                direction = previousNode[2] + 1;
 
 //                keepLooking = false; //-------------------------------------------------------------KILL SWITCH
 
