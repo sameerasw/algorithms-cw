@@ -157,40 +157,13 @@ public class Main {
             System.out.println("No path found.");
             return;
         } else {
-            //extract the shortest path from the result
+            //extract the shortest path from the result by comparing the number of moves
+
+            printHistory((ArrayList<int[]>) result.get(0)[0]);
+            printArray((String[]) result.get(0)[3]);
+
         }
 
-        //clear the console
-        System.out.println("\033[H\033[2J");
-        System.out.flush();
-
-        //print the final array
-        printArray((String[]) result.getFirst()[3]);
-        printFinalPath((ArrayList<int[]>) result.getFirst()[0], (int[]) result.getFirst()[1], (int[]) result.getFirst()[2]);
-    }
-
-    public static void printFinalPath(ArrayList<int[]> history, int[] start, int[] finish) {
-        //print the final path in a readable format with directional arrows
-        System.out.println("\nFinal path: ");
-        System.out.println("Starting node: " + start[0] + ", " + start[1]);
-        String direction = "→";
-        for (int i = 1; i < history.size(); i++) {
-            int[] node = history.get(i);
-            if (i < history.size() - 1) {
-                int[] nextNode = history.get(i + 1);
-                if (node[0] == nextNode[0] && node[1] > nextNode[1]) {
-                    direction = "↑";
-                } else if (node[0] == nextNode[0] && node[1] < nextNode[1]) {
-                    direction = "↓";
-                } else if (node[0] > nextNode[0] && node[1] == nextNode[1]) {
-                    direction = "←";
-                } else if (node[0] < nextNode[0] && node[1] == nextNode[1]) {
-                    direction = "→";
-                }
-                System.out.println("Node [" + node[0] + ", " + node[1] + "] " + direction + " moves: " + node[3] + " to " + "[" + nextNode[0] + ", " + nextNode[1] + "]");
-            }
-        }
-        System.out.println("Finishing node: " + finish[0] + ", " + finish[1]);
     }
 
     public static ArrayList<Object> movePlayer(String[] readings, int x, int y, int direction, ArrayList<int[]> history) {
@@ -286,7 +259,6 @@ public class Main {
         //implement the shortest path algorithm
         int direction = 0;
         ArrayList<int[]> history = new ArrayList<>();
-//        ArrayList<int[]> fullHistory = new ArrayList<>();
         ArrayList<Object[]> results = new ArrayList<>();
         boolean keepLooking = true;
         int moves = 0;
@@ -294,7 +266,6 @@ public class Main {
         int[] start = new int[]{nodeInfo[0], nodeInfo[1]};
 
         history.add(new int[]{nodeInfo[0], nodeInfo[1], -1, 0});
-//        fullHistory.add(new int[]{nodeInfo[0], nodeInfo[1], -1});
         if (logging) { printHistory(history); }
 
         while (keepLooking) {
@@ -321,7 +292,6 @@ public class Main {
             if ((prevPosition[0] != nodeInfo[0] || prevPosition[1] != nodeInfo[1]) && (getNode(readings, nodeInfo[1], nodeInfo[0]) != 'F')) {
                 //add the new position to the history with the direction as a stack
                 history.add(new int[]{prevPosition[0], prevPosition[1], direction, (history.getLast()[3] + moves)});
-//                fullHistory.add(new int[]{prevPosition[0], prevPosition[1], direction});
 
                 if (fullLogging) { printHistory(history); }
 
@@ -338,10 +308,9 @@ public class Main {
                 //add the previous node and the finish node to the history
                 history.add(new int[]{prevPosition[0], prevPosition[1], direction, (history.getLast()[3] + moves)});
                 history.add(new int[]{nodeInfo[0], nodeInfo[1], direction, (history.getLast()[3] + moves)});
-//                fullHistory.add(new int[]{nodeInfo[0], nodeInfo[1], direction});
 
                 //add current history, start and finish nodes to the final result
-                results.add(new Object[]{history, start, new int[]{nodeInfo[0], nodeInfo[1]}, readings});
+                results.add(new Object[]{history, start, new int[]{nodeInfo[0], nodeInfo[1]}, readings, (history.get(history.size()-2)[3])});
 
 
                 history.removeLast();
