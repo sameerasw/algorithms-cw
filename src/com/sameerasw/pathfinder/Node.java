@@ -1,3 +1,5 @@
+package com.sameerasw.pathfinder;
+
 public class Node {
 
     public Node(int x, int y, int direction) {

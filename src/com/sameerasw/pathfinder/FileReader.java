@@ -1,8 +1,12 @@
+package com.sameerasw.pathfinder;
+
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.Scanner;
+
+import static com.sameerasw.pathfinder.PathPrinter.*;
 
 public class FileReader {
     public String[] readFile() {
@@ -11,7 +15,7 @@ public class FileReader {
         File file = new File("data.txt");
         String filename;
         if (file.exists()) {
-            System.out.println(Main.ANSI_GREEN + "File found: " + file.getName() + Main.ANSI_RESET);
+            System.out.println(ANSI_GREEN + "File found: " + file.getName() + ANSI_RESET);
             filename = file.getName();
         } else {
             System.out.println("Default data.txt file not found, opening the file picker");
@@ -22,7 +26,7 @@ public class FileReader {
             dialog.setVisible(true);
             filename = dialog.getFile();
             if (filename == null) {
-                System.out.println(Main.ANSI_RED_BACKGROUND + "You cancelled the choice" + Main.ANSI_RESET);
+                System.out.println(ANSI_RED_BACKGROUND + "You cancelled the choice" + ANSI_RESET);
                 System.exit(0);
             } else {
                 System.out.println("You chose " + dialog.getDirectory() + filename);
