@@ -1,9 +1,5 @@
-import java.awt.*;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Scanner;
 
 public class Main {
     public static final String ANSI_RESET = "\u001B[0m";
@@ -96,19 +92,36 @@ public class Main {
         return false;
     }
 
-    public static void finalResult(ArrayList<Object[]> result) {
-
+    public static void finalResult(ArrayList<int[]> results) {
         //if the result is empty print a message and return
-        if (result.isEmpty()) {
+        if (results.isEmpty()) {
             System.out.println("No path found.");
-        } else if(result.size() == 1) {
-            //extract the shortest path from the result by comparing the number of moves
-
-            printHistory((ArrayList<int[]>) result.getFirst()[0]);
-            printArray((String[]) result.getFirst()[3]);
-
+        } else {
+            //print each line of the shortest path in the format of "Move left to (7,1)"
+            System.out.println("\nShortest path: " + ANSI_CYAN + ANSI_REVERSED + results.size() + " steps." + ANSI_RESET + "\n");
+            try{
+                for (int i = 0; i < results.size(); i++) {
+                    if (i == 0) {
+                        System.out.println(ANSI_GREEN + "Starting from (" + results.get(i)[0] + ", " + results.get(i)[1] + ")" + ANSI_RESET);
+                    } else {
+                        System.out.println(switchDirection(results.get(i)[2]) + "to (" + results.get(i+1)[0] + ", " + results.get(i+1)[1] + ")");
+                    }
+                }
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println(ANSI_BLUE + "Finishing at (" + results.get(results.size()-1)[0] + ", " + results.get(results.size()-1)[1] + ")" + ANSI_RESET);
+            }
         }
+    }
 
+    private static String switchDirection(int i) {
+        //convert the direction number to a string
+        return switch (i) {
+            case 0 -> "Move up" + ANSI_CYAN + " ↑ " + ANSI_RESET;
+            case 1 -> "Move right" + ANSI_CYAN + " → " + ANSI_RESET;
+            case 2 -> "Move down" + ANSI_CYAN + " ↓ " + ANSI_RESET;
+            case 3 -> "Move left" + ANSI_CYAN + " ← " + ANSI_RESET;
+            default -> "Starting from ";
+        };
     }
 
     public static ArrayList<Object> movePlayer(String[] readings, int x, int y, int direction, ArrayList<int[]> history) {
@@ -200,29 +213,36 @@ public class Main {
         }
     }
 
-    public static void shortestPath(String[] readings, int[] nodeInfo) {
+    public static long shortestPath(String[] readings, int[] nodeInfo) {
         //implement the shortest path algorithm
         int direction = 0;
         ArrayList<int[]> history = new ArrayList<>();
-        ArrayList<Object[]> results = new ArrayList<>();
+        ArrayList<int[]> results = new ArrayList<>();
         boolean keepLooking = true;
         int moves = 0;
 
         int[] start = new int[]{nodeInfo[0], nodeInfo[1]};
 
         history.add(new int[]{nodeInfo[0], nodeInfo[1], -1, 0});
-        if (logging) { printHistory(history); }
+        if (logging) {
+            printHistory(history);
+        }
 
+        long endTime = 0;
         while (keepLooking) {
 
-            if (logging) { System.out.println("\n" + ANSI_GREEN + ANSI_REVERSED + "searching started" + ANSI_RESET); }
+            if (logging) {
+                System.out.println("\n" + ANSI_GREEN + ANSI_REVERSED + "searching started" + ANSI_RESET);
+            }
             int[] prevPosition = new int[]{nodeInfo[0], nodeInfo[1]};
 
             //move the player to the given direction
             if (inHistory(history, nodeInfo, direction)) {
-                if (logging) { System.out.println("Node already visited, reverting to previous node"); }
+                if (logging) {
+                    System.out.println("Node already visited, reverting to previous node");
+                }
                 direction++;
-            } else if( direction < 4) {
+            } else if (direction < 4) {
                 ArrayList<Object> output = movePlayer(readings, nodeInfo[0], nodeInfo[1], direction, history);
                 readings = (String[]) output.get(0);
                 nodeInfo = (int[]) output.get(1);
@@ -230,7 +250,9 @@ public class Main {
                 moves = (int) output.get(3);
             }
 
-            if (logging) { System.out.println("previous node: " + Arrays.toString(prevPosition) + " → current node: " + Arrays.toString(nodeInfo)); }
+            if (logging) {
+                System.out.println("previous node: " + Arrays.toString(prevPosition) + " → current node: " + Arrays.toString(nodeInfo));
+            }
 
 
             //if the new node is different from the previous node update the nodeInfo and reset the direction to 0
@@ -238,15 +260,15 @@ public class Main {
                 //add the new position to the history with the direction as a stack
                 history.add(new int[]{prevPosition[0], prevPosition[1], direction, (history.getLast()[3] + moves)});
 
-                if (fullLogging) { printHistory(history); }
+                if (fullLogging) {
+                    printHistory(history);
+                }
 
                 direction = 0;
-                if (logging) { System.out.println("node changed, direction reset"); }
-
+                if (logging) {
+                    System.out.println("node changed, direction reset");
+                }
             }
-
-
-
 
             //if the player hits the finish node return the path
             if (Node.getNode(readings, nodeInfo[1], nodeInfo[0]) == 'F') {
@@ -254,9 +276,14 @@ public class Main {
                 history.add(new int[]{prevPosition[0], prevPosition[1], direction, (history.getLast()[3] + moves)});
                 history.add(new int[]{nodeInfo[0], nodeInfo[1], direction, (history.getLast()[3] + moves)});
 
-                //add current history, start and finish nodes to the final result
-                results.add(new Object[]{history, start, new int[]{nodeInfo[0], nodeInfo[1]}, readings, (history.get(history.size()-2)[3])});
 
+                //add current history to the results if the moves count is smaller than the previous results
+                if (results.isEmpty()) {
+                    results = new ArrayList<>(history);
+                } else if (history.size() < results.size()) {
+                    results.clear();
+                    results = new ArrayList<>(history);
+                }
 
                 history.removeLast();
 
@@ -264,11 +291,9 @@ public class Main {
                 nodeInfo = new int[]{history.getLast()[0], history.getLast()[1]};
                 direction = history.getLast()[2] + 1;
                 history.removeLast();
-
-//                    return;
             }
 
-            if (((nodeInfo[0] != start[0] || nodeInfo[1] != start[1]) ||  history.size() > 1 )  && direction == 4) {
+            if (((nodeInfo[0] != start[0] || nodeInfo[1] != start[1]) || history.size() > 1) && direction == 4) {
                 //if the player hits a wall or a visited node and the direction is 3 go back to the previous node
 
                 int[] previousNode = history.getLast();
@@ -278,8 +303,10 @@ public class Main {
                     history.removeLast();
                 }
 
-                if (logging) { System.out.println("Reverted history to previous checkpoint"); }
-//                if (logging) { printHistory(history); }
+                if (logging) {
+                    System.out.println("Reverted history to previous checkpoint");
+                }
+//                if (fullLogging) { printHistory(history); }
 
                 //update the nodeInfo and direction to the previous node
                 nodeInfo = new int[]{previousNode[0], previousNode[1]};
@@ -288,11 +315,17 @@ public class Main {
 //                keepLooking = false; //-------------------------------------------------------------KILL SWITCH
 
             } else if (nodeInfo[0] == start[0] && nodeInfo[1] == start[1] && direction == 4) {
+                //stop the timer
+                endTime = System.nanoTime();
+
                 keepLooking = false;
                 System.out.println("Nowhere to go.");
+                printArray(readings);
+
                 finalResult(results);
             }
         }
+        return endTime;
     }
 
     public static void main(String[] args) {
@@ -309,10 +342,7 @@ public class Main {
         long startTime = System.nanoTime();
 
         //get the shortest path
-        shortestPath(readings, nodeInfo);
-
-        //end the time calculation
-        long endTime = System.nanoTime();
+        long endTime = shortestPath(readings, nodeInfo);
         long duration = (endTime - startTime) / 1000000;
         System.out.println("\nShortest path calculation time: " + ANSI_CYAN + duration + "ms." + ANSI_RESET + " Program ended.");
     }
