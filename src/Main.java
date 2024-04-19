@@ -23,7 +23,7 @@ public class Main {
 
     public static int[] printArray(String[] arr) {
         //add a border to the array representation
-        System.out.println(ANSI_RED_BACKGROUND + " ".repeat((arr[0].length()+2)*3) + ANSI_RESET);
+        System.out.println(ANSI_RED_BACKGROUND + " ".repeat((arr[0].length() + 2) * 3) + ANSI_RESET);
 
         int[] start = new int[0];
         int[] finish = new int[0];
@@ -44,7 +44,7 @@ public class Main {
         }
 
         //add a border to the array representation
-        System.out.println(ANSI_RED_BACKGROUND + " ".repeat((arr[0].length()+2)*3) + ANSI_RESET);
+        System.out.println(ANSI_RED_BACKGROUND + " ".repeat((arr[0].length() + 2) * 3) + ANSI_RESET);
 
         output = new int[]{start[0], start[1], finish[0], finish[1]};
         return output;
@@ -56,16 +56,16 @@ public class Main {
             case '.' -> System.out.print(ANSI_BLACK_BACKGROUND);
             case '0' -> System.out.print(ANSI_RED_BACKGROUND);
             //use background green color for 'F'
-            case 'F' -> System.out.print(ANSI_REVERSED+ ANSI_CYAN);
-            case 'S' -> System.out.print(ANSI_REVERSED+ ANSI_GREEN);
-            case '@' -> System.out.print(ANSI_REVERSED+ ANSI_BLUE);
+            case 'F' -> System.out.print(ANSI_REVERSED + ANSI_CYAN);
+            case 'S' -> System.out.print(ANSI_REVERSED + ANSI_GREEN);
+            case '@' -> System.out.print(ANSI_REVERSED + ANSI_BLUE);
         }
 
         if (c == '0') {
             System.out.print("   ");
         } else if (c == '.') {
             System.out.print("   ");
-        } else{
+        } else {
             System.out.print(" " + c + " ");
         }
 
@@ -98,16 +98,16 @@ public class Main {
         } else {
             //print each line of the shortest path in the format of "Move left to (7,1)"
             System.out.println("\nShortest path: " + ANSI_CYAN + ANSI_REVERSED + results.size() + " steps." + ANSI_RESET + "\n");
-            try{
+            try {
                 for (int i = 0; i < results.size(); i++) {
                     if (i == 0) {
                         System.out.println(ANSI_GREEN + "Starting from (" + results.get(i)[0] + ", " + results.get(i)[1] + ")" + ANSI_RESET);
                     } else {
-                        System.out.println(switchDirection(results.get(i)[2]) + "to (" + results.get(i+1)[0] + ", " + results.get(i+1)[1] + ")");
+                        System.out.println(switchDirection(results.get(i)[2]) + "to (" + results.get(i + 1)[0] + ", " + results.get(i + 1)[1] + ")");
                     }
                 }
             } catch (IndexOutOfBoundsException e) {
-                System.out.println(ANSI_BLUE + "Finishing at (" + results.get(results.size()-1)[0] + ", " + results.get(results.size()-1)[1] + ")" + ANSI_RESET);
+                System.out.println(ANSI_BLUE + "Finishing at (" + results.getLast()[0] + ", " + results.getLast()[1] + ")" + ANSI_RESET);
             }
         }
     }
@@ -141,8 +141,10 @@ public class Main {
             lastDirection = ((int[]) history.getLast())[2];
         }
 
-        if (((lastDirection+2)%4 == direction  && lastDirection != -1) && history.size() > 1){
-            if (logging) { System.out.println("Opposite direction, skipped : tried: " + direction + ". Last: " + lastDirection); }
+        if (((lastDirection + 2) % 4 == direction && lastDirection != -1) && history.size() > 1) {
+            if (logging) {
+                System.out.println("Opposite direction, skipped : tried: " + direction + ". Last: " + lastDirection);
+            }
             direction++;
             output.set(2, direction);
             output.set(3, moves);
@@ -159,7 +161,9 @@ public class Main {
 
             String nodeResult = String.valueOf(Node.getNode(readings, currentPosition[1], currentPosition[0]));
 
-            if (logging) { System.out.println("Checking node: " + Arrays.toString(currentPosition) + " moving: " + direction + " node: " + nodeResult); }
+            if (logging) {
+                System.out.println("Checking node: " + Arrays.toString(currentPosition) + " moving: " + direction + " node: " + nodeResult);
+            }
 
             //if the player hits the finish node return the array
             if (nodeResult.equals("F")) {
@@ -172,9 +176,11 @@ public class Main {
                 System.out.println(ANSI_GREEN + "A path found. In " + (history.getLast()[3] + moves) + " moves." + ANSI_RESET);
                 return output;
 
-            } else if (nodeResult.equals("0")){
+            } else if (nodeResult.equals("0")) {
                 //if the player hits a wall return the array
-                if (logging) { System.out.println("Hit a wall"); }
+                if (logging) {
+                    System.out.println("Hit a wall");
+                }
 
                 //go back a step
                 switch (direction) {
@@ -197,18 +203,22 @@ public class Main {
 
             } else {
                 //if the player hits an empty or visited node update the current visited node with @ if it's not the start node or the finish node
-                if (!nodeResult.equals("S")){
+                if (!nodeResult.equals("S")) {
                     readings[currentPosition[1]] = readings[currentPosition[1]].substring(0, currentPosition[0]) + "@" + readings[currentPosition[1]].substring(currentPosition[0] + 1);
                 }
 
                 output.set(0, readings);
                 output.set(1, currentPosition);
                 output.set(3, moves);
-                if (logging) { System.out.println("Keep moving to direction: " + direction); }
+                if (logging) {
+                    System.out.println("Keep moving to direction: " + direction);
+                }
                 moves++;
             }
 
-            if (fullLogging) { printArray(readings); }
+            if (fullLogging) {
+                printArray(readings);
+            }
         }
     }
 
