@@ -5,8 +5,6 @@ import java.util.Arrays;
 
 import static com.sameerasw.pathfinder.PathPrinter.*;
 
-//import ANSI color variables from the PathPrinter class
-
 public class Main {
 
     //set logging to true to print the movement steps at each step
@@ -15,9 +13,9 @@ public class Main {
     //set fullLogging to true to print the maze at each step
     public static boolean fullLogging = true;
 
-    //if logging is disabled, disable fullLogging
     static {
         if (!logging) {
+            //if logging is disabled, disable fullLogging
             fullLogging = false;
         }
     }
@@ -33,50 +31,42 @@ public class Main {
     }
 
     public static ArrayList<Object> movePlayer(String[] readings, int x, int y, int direction, ArrayList<int[]> history) {
-        //move the player from the current position to the given direction until it hits a wall (0) and return the new array and the new position of the player as a nested array
+        //move the player from the current position to the given direction until it hits a wall (0) and return the new array and the new position
         int[] currentPosition = new int[]{x, y};
         ArrayList<Object> output = new ArrayList<>();
-
         int moves = 0;
-
         output.add(readings);
         output.add(currentPosition);
         output.add(direction);
         output.add(moves);
-
         int lastDirection = 0;
 
         if (history.size() > 1) {
             lastDirection = ((int[]) history.getLast())[2];
-        }
-
-        if (((lastDirection + 2) % 4 == direction && lastDirection != -1) && history.size() > 1) {
-            if (logging) {
-                System.out.println("Opposite direction, skipped : tried: " + direction + ". Last: " + lastDirection);
+            if (((lastDirection + 2) % 4 == direction && lastDirection != -1)) {
+                //prevents the player from going back to the previous node
+                if (logging) { System.out.println("Opposite direction, skipped : tried: " + direction + ". Last: " + lastDirection); }
+                direction++;
+                output.set(2, direction);
+                output.set(3, moves);
+                return output;
             }
-            direction++;
-            output.set(2, direction);
-            output.set(3, moves);
-            return output;
         }
 
         while (true) {
+
             switch (direction) {
+                //update the coordinates based on the direction
                 case 0 -> currentPosition[1] -= 1;
                 case 1 -> currentPosition[0] += 1;
                 case 2 -> currentPosition[1] += 1;
                 case 3 -> currentPosition[0] -= 1;
             }
-
             String nodeResult = String.valueOf(Node.getNode(readings, currentPosition[1], currentPosition[0]));
+            if (logging) { System.out.println("Checking node: " + Arrays.toString(currentPosition) + " moving: " + direction + " node: " + nodeResult); }
 
-            if (logging) {
-                System.out.println("Checking node: " + Arrays.toString(currentPosition) + " moving: " + direction + " node: " + nodeResult);
-            }
-
-            //if the player hits the finish node return the array
             if (nodeResult.equals("F")) {
-                //set the output array to the new readings and the new position of the player as a nested array
+                //Player hits the finish node
                 moves++;
                 output.set(1, currentPosition);
                 output.set(0, readings);
@@ -86,20 +76,16 @@ public class Main {
                 return output;
 
             } else if (nodeResult.equals("0")) {
-                //if the player hits a wall return the array
-                if (logging) {
-                    System.out.println("Hit a wall");
-                }
+                //Player hits a wall
+                if (logging) { System.out.println("Hit a wall"); }
 
-                //go back a step
+                //go back to the previous node and update the direction
                 switch (direction) {
                     case 0 -> currentPosition[1] += 1;
                     case 1 -> currentPosition[0] -= 1;
                     case 2 -> currentPosition[1] -= 1;
                     case 3 -> currentPosition[0] += 1;
                 }
-
-                //increase the direction if it's less than 3 or leave it at 3
                 if (direction < 4 && moves < 1) {
                     direction++;
                 }
