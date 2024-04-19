@@ -73,7 +73,6 @@ public class Main {
         System.out.print(ANSI_RESET);
     }
 
-
     public static void printHistory(ArrayList<int[]> history) {
         //print the history in a readable format
         System.out.println("History: ");
@@ -275,7 +274,6 @@ public class Main {
                 //add the previous node and the finish node to the history
                 history.add(new int[]{prevPosition[0], prevPosition[1], direction, (history.getLast()[3] + moves)});
                 history.add(new int[]{nodeInfo[0], nodeInfo[1], direction, (history.getLast()[3] + moves)});
-
 
                 //add current history to the results if the moves count is smaller than the previous results
                 if (results.isEmpty()) {
