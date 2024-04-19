@@ -6,13 +6,13 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
-    private static final String ANSI_RESET = "\u001B[0m";
-    private static final String ANSI_BLACK_BACKGROUND = "\u001B[40m";
-    private static final String ANSI_RED_BACKGROUND = "\u001B[41m";
-    private static final String ANSI_REVERSED = "\u001b[7m";
-    private static final String ANSI_CYAN = "\u001B[36m";
-    private static final String ANSI_GREEN = "\u001B[32m";
-    private static final String ANSI_BLUE = "\u001B[34m";
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_BLACK_BACKGROUND = "\u001B[40m";
+    public static final String ANSI_RED_BACKGROUND = "\u001B[41m";
+    public static final String ANSI_REVERSED = "\u001b[7m";
+    public static final String ANSI_CYAN = "\u001B[36m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_BLUE = "\u001B[34m";
 
     //set logging to true to print the array at each step
     public static final boolean logging = false;
@@ -31,18 +31,18 @@ public class Main {
 
         int[] start = new int[0];
         int[] finish = new int[0];
-        int[] output = new int[0];
+        int[] output;
 
         // Print the nested array with element by element
         for (int i = 0; i < arr.length; i++) {
             System.out.print(ANSI_RED_BACKGROUND + "   " + ANSI_RESET);
             for (int j = 0; j < arr[i].length(); j++) {
-                if (getNode(arr, i, j) == 'S') {
+                if (Node.getNode(arr, i, j) == 'S') {
                     start = new int[]{j, i};
-                } else if (getNode(arr, i, j) == 'F') {
+                } else if (Node.getNode(arr, i, j) == 'F') {
                     finish = new int[]{j, i};
                 }
-                printColors(getNode(arr, i, j));
+                printColors(Node.getNode(arr, i, j));
             }
             System.out.print(ANSI_RED_BACKGROUND + "   " + ANSI_RESET + "\n");
         }
@@ -77,60 +77,6 @@ public class Main {
         System.out.print(ANSI_RESET);
     }
 
-    public static String[] readFile() {
-    // Read the file and return the content as a string array and return as an array using scanner
-
-    //look for data.txt and if it's not found open a file picker
-    File file = new File("data.txt");
-    String filename;
-    if (file.exists()) {
-        System.out.println("File found: " + file.getName());
-        filename = file.getName();
-    } else {
-        System.out.println("File not found, opening file picker");
-
-        //open file picker
-        FileDialog dialog = new FileDialog((Frame)null, "Select File to Open");
-        dialog.setMode(FileDialog.LOAD);
-        dialog.setVisible(true);
-        filename = dialog.getFile();
-        if (filename == null) {
-            System.out.println("You cancelled the choice");
-            System.exit(0);
-        } else {
-            System.out.println("You chose " + dialog.getDirectory() + filename);
-        }
-    }
-
-    String[] readings = new String[0];
-    try {
-        Scanner scanner = new Scanner(new File(filename));
-        while (scanner.hasNextLine()) {
-            String line = scanner.nextLine();
-            readings = Arrays.copyOf(readings, readings.length + 1);
-            readings[readings.length - 1] = line;
-        }
-        scanner.close();
-    } catch (FileNotFoundException e) {
-        System.out.println("An error occurred while reading " + filename);
-    }
-
-    //strip spaces from the array
-    for (int i = 0; i < readings.length; i++) {
-        readings[i] = readings[i].strip();
-    }
-
-    return readings;
-}
-
-    public static char getNode(String[] readings, int x, int y) {
-        //return the node at the given x and y coordinates
-        if (x < 0 || y < 0 || x >= readings.length || y >= readings[0].length()) {
-            //if it's out of range return 0
-            return '0';
-        }
-        return readings[x].charAt(y);
-    }
 
     public static void printHistory(ArrayList<int[]> history) {
         //print the history in a readable format
@@ -155,12 +101,11 @@ public class Main {
         //if the result is empty print a message and return
         if (result.isEmpty()) {
             System.out.println("No path found.");
-            return;
-        } else {
+        } else if(result.size() == 1) {
             //extract the shortest path from the result by comparing the number of moves
 
-            printHistory((ArrayList<int[]>) result.get(0)[0]);
-            printArray((String[]) result.get(0)[3]);
+            printHistory((ArrayList<int[]>) result.getFirst()[0]);
+            printArray((String[]) result.getFirst()[3]);
 
         }
 
@@ -200,7 +145,7 @@ public class Main {
                 case 3 -> currentPosition[0] -= 1;
             }
 
-            String nodeResult = String.valueOf(getNode(readings, currentPosition[1], currentPosition[0]));
+            String nodeResult = String.valueOf(Node.getNode(readings, currentPosition[1], currentPosition[0]));
 
             if (logging) { System.out.println("Checking node: " + Arrays.toString(currentPosition) + " moving: " + direction + " node: " + nodeResult); }
 
@@ -212,7 +157,7 @@ public class Main {
                 output.set(0, readings);
                 output.set(2, direction);
                 output.set(3, moves);
-                System.out.println("A path found. In " + (history.getLast()[3] + moves) + " moves.");
+                System.out.println(ANSI_GREEN + "A path found. In " + (history.getLast()[3] + moves) + " moves." + ANSI_RESET);
                 return output;
 
             } else if (nodeResult.equals("0")){
@@ -289,7 +234,7 @@ public class Main {
 
 
             //if the new node is different from the previous node update the nodeInfo and reset the direction to 0
-            if ((prevPosition[0] != nodeInfo[0] || prevPosition[1] != nodeInfo[1]) && (getNode(readings, nodeInfo[1], nodeInfo[0]) != 'F')) {
+            if ((prevPosition[0] != nodeInfo[0] || prevPosition[1] != nodeInfo[1]) && (Node.getNode(readings, nodeInfo[1], nodeInfo[0]) != 'F')) {
                 //add the new position to the history with the direction as a stack
                 history.add(new int[]{prevPosition[0], prevPosition[1], direction, (history.getLast()[3] + moves)});
 
@@ -304,7 +249,7 @@ public class Main {
 
 
             //if the player hits the finish node return the path
-            if (getNode(readings, nodeInfo[1], nodeInfo[0]) == 'F') {
+            if (Node.getNode(readings, nodeInfo[1], nodeInfo[0]) == 'F') {
                 //add the previous node and the finish node to the history
                 history.add(new int[]{prevPosition[0], prevPosition[1], direction, (history.getLast()[3] + moves)});
                 history.add(new int[]{nodeInfo[0], nodeInfo[1], direction, (history.getLast()[3] + moves)});
@@ -351,18 +296,24 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        System.out.println("Program started. Pick the file");
+        System.out.println("Program started.");
 
         //read the file
-        String[] readings = readFile();
+        String[] readings = new FileReader().readFile();
 
         //print the array
         int[] nodeInfo = printArray(readings);
         System.out.println("Start position: " + nodeInfo[0] + ", " + nodeInfo[1]);
 
+        //start the time calculation
+        long startTime = System.nanoTime();
+
         //get the shortest path
         shortestPath(readings, nodeInfo);
 
-        System.out.println("Program ended.");
+        //end the time calculation
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime) / 1000000;
+        System.out.println("\nShortest path calculation time: " + ANSI_CYAN + duration + "ms." + ANSI_RESET + " Program ended.");
     }
 }
