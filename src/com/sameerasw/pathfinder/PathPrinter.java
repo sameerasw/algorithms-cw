@@ -21,7 +21,7 @@ public class PathPrinter {
         for (int i = 0; i < arr.length; i++) {
             System.out.print(ANSI_RED_BACKGROUND + "   " + ANSI_RESET);
             for (int j = 0; j < arr[i].length(); j++) {
-                printColors(Node.getNode(arr, i, j));
+                printColors(arr[i].charAt(j));
                 if (arr[i].charAt(j) == 'S') {
                     start = new int[]{j, i};
                 } else if (arr[i].charAt(j) == 'F') {
