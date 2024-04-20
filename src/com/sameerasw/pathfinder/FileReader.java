@@ -21,21 +21,36 @@ public class FileReader {
             System.out.println("Default data.txt file not found, opening the file picker");
 
             //open file picker
-            FileDialog dialog = new FileDialog((Frame) null, "Select File to Open");
-            dialog.setMode(FileDialog.LOAD);
-            dialog.setVisible(true);
-            filename = dialog.getFile();
+            FileDialog fileDialog = new FileDialog((Frame) null, "Select File to Open");
+            fileDialog.setMode(FileDialog.LOAD);
+            fileDialog.setVisible(true);
+            filename = fileDialog.getFile();
+
             if (filename == null) {
-                System.out.println(ANSI_RED_BACKGROUND + "You cancelled the choice" + ANSI_RESET);
+                System.out.println("No file selected, exiting the program");
                 System.exit(0);
             } else {
-                System.out.println("You chose " + dialog.getDirectory() + filename);
+                file = new File(fileDialog.getDirectory() + filename);
+                System.out.println("File selected: " + file + "\n");
+
+                //check if the file is a text file
+                if (!filename.endsWith(".txt")) {
+                    System.out.println("Invalid file type, please select a .txt file");
+                    System.exit(0);
+                }
+
+                //check if the file exists
+                if (!file.exists()) {
+                    System.out.println("File not found, exiting the program");
+                    System.exit(0);
+                }
             }
+
         }
 
         String[] readings = new String[0];
         try {
-            Scanner scanner = new Scanner(new File(filename));
+            Scanner scanner = new Scanner(new File(String.valueOf(file)));
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 readings = Arrays.copyOf(readings, readings.length + 1);

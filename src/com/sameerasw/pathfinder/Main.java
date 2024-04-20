@@ -39,7 +39,7 @@ public class Main {
         output.add(currentPosition);
         output.add(direction);
         output.add(moves);
-        int lastDirection = 0;
+        int lastDirection;
 
         if (history.size() > 1) {
             lastDirection = ((int[]) history.getLast())[2];
