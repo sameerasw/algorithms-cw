@@ -72,7 +72,7 @@ public class Main {
                 output.set(0, readings);
                 output.set(2, direction);
                 output.set(3, moves);
-                System.out.println(ANSI_GREEN + "A path found. In " + (history.getLast()[3] + moves) + " moves." + ANSI_RESET);
+                System.out.println(ANSI_GREEN + "A path found. In " + (history.getLast()[3] + moves) + " moves." + ANSI_RESET + " Continuing search.");
                 return output;
 
             } else if (nodeResult.equals("0")) {
@@ -131,6 +131,8 @@ public class Main {
         if (logging) {
             PathPrinter.printHistory(history);
         }
+
+        System.out.println("Starting search from: " + Arrays.toString(start));
 
         long endTime = 0;
         while (keepLooking) {
@@ -222,7 +224,7 @@ public class Main {
                 endTime = System.nanoTime();
 
                 keepLooking = false;
-                System.out.println("Nowhere to go.");
+                if (logging) { System.out.println("Nowhere to go."); }
                 printArray(readings);
 
                 finalResult(results);
