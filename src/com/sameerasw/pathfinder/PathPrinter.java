@@ -66,7 +66,7 @@ public class PathPrinter {
         if (results.isEmpty()) {
             System.out.println("No path found.");
         } else {
-            System.out.println("\nShortest path in " + ANSI_CYAN + ANSI_REVERSED + results.getLast()[3] + ANSI_RESET + " blocks/ " + ANSI_CYAN + ANSI_REVERSED + results.size() + ANSI_RESET + " moves.");
+            System.out.println("\nShortest path in " + ANSI_CYAN + ANSI_REVERSED + results.get(results.size()-2)[3] + ANSI_RESET + " blocks/ " + ANSI_CYAN + ANSI_REVERSED + (results.size()-2) + ANSI_RESET + " moves.");
             try {
                 for (int i = 0; i < results.size(); i++) {
                     if (i == 0) {
