@@ -248,5 +248,6 @@ public class Main {
         long endTime = shortestPath(readings, nodeInfo);
         long duration = (endTime - startTime) / 1000000;
         System.out.println("\nShortest path calculation time: " + ANSI_CYAN + duration + "ms." + ANSI_RESET + " Program ended.");
+        System.exit(0);
     }
 }
