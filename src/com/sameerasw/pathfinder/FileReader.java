@@ -60,7 +60,7 @@ public class FileReader {
             scanner.close();
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred while reading " + filename);
-        }
+         }
 
         //strip spaces from the array
         for (int i = 0; i < readings.length; i++) {
