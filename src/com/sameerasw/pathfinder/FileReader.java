@@ -6,7 +6,8 @@ import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.Scanner;
 
-import static com.sameerasw.pathfinder.PathPrinter.*;
+import static com.sameerasw.pathfinder.PathPrinter.ANSI_GREEN;
+import static com.sameerasw.pathfinder.PathPrinter.ANSI_RESET;
 
 public class FileReader {
     public String[] readFile() {

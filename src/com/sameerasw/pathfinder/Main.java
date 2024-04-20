@@ -7,7 +7,8 @@ import static com.sameerasw.pathfinder.PathPrinter.*;
 
 public class Main {
 
-    //set logging level to print the movement steps at each step
+    //-------------debugging purposes only-------------------
+
     //0: no logging, 1: print the finishing nodes and the maze, 2: print the steps and the history at each step, 3: print the full history (use only for debugging small mazes)
     private static final int loggingLevel = 0;
     public static boolean logging;
@@ -39,6 +40,8 @@ public class Main {
         }
     }
 
+    //-------------------------------------------------------
+
     public static boolean inHistory(ArrayList<int[]> history, int[] node, int direction) {
         //check if the node is in the history with the movement direction
         for (int[] n : history) {
@@ -64,7 +67,9 @@ public class Main {
             lastDirection = ((int[]) history.getLast())[2];
             if (((lastDirection + 2) % 4 == direction && lastDirection != -1)) {
                 //prevents the player from going back to the previous node
-                if (moveLogging) { System.out.println("Opposite direction, skipped : tried: " + direction + ". Last: " + lastDirection); }
+                if (moveLogging) {
+                    System.out.println("Opposite direction, skipped : tried: " + direction + ". Last: " + lastDirection);
+                }
                 direction++;
                 output.set(2, direction);
                 output.set(3, moves);
@@ -82,7 +87,9 @@ public class Main {
                 case 3 -> currentPosition[0] -= 1;
             }
             String nodeResult = String.valueOf(Node.getNode(readings, currentPosition[1], currentPosition[0]));
-            if (moveLogging) { System.out.println("Checking node: " + Arrays.toString(currentPosition) + " moving: " + direction + " node: " + nodeResult); }
+            if (moveLogging) {
+                System.out.println("Checking node: " + Arrays.toString(currentPosition) + " moving: " + direction + " node: " + nodeResult);
+            }
 
             if (nodeResult.equals("F")) {
                 //Player hits the finish node
@@ -91,12 +98,16 @@ public class Main {
                 output.set(0, readings);
                 output.set(2, direction);
                 output.set(3, moves);
-                if (logging) { System.out.println(ANSI_GREEN + "A path found. In " + (history.getLast()[3] + moves) + " moves." + ANSI_RESET + " Continuing search."); }
+                if (logging) {
+                    System.out.println(ANSI_GREEN + "A path found. In " + (history.getLast()[3] + moves) + " moves." + ANSI_RESET + " Continuing search.");
+                }
                 return output;
 
             } else if (nodeResult.equals("0")) {
                 //Player hits a wall
-                if (moveLogging) { System.out.println("Hit a wall"); }
+                if (moveLogging) {
+                    System.out.println("Hit a wall");
+                }
 
                 //go back to the previous node and update the direction
                 switch (direction) {
@@ -243,8 +254,12 @@ public class Main {
                 endTime = System.nanoTime();
 
                 keepLooking = false;
-                if (logging) { System.out.println("Nowhere to go.\n"); }
-                if (logging) { printArray(readings); }
+                if (logging) {
+                    System.out.println("Nowhere to go.\n");
+                }
+                if (logging) {
+                    printArray(readings);
+                }
 
                 finalResult(results);
             }
