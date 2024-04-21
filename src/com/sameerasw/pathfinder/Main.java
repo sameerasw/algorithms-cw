@@ -9,7 +9,7 @@ public class Main {
     //-------------debugging purposes only-------------------
 
     //0: no logging, 1: print the finishing nodes and the maze, 2: print the steps and the history at each step, 3: print the full history (use only for debugging small mazes)
-    private static final int loggingLevel = 3;
+    private static final int loggingLevel = 0;
     public static boolean logging;
     public static boolean moveLogging;
     public static boolean fullLogging;
@@ -40,7 +40,10 @@ public class Main {
     }
 
     //-------------------------------------------------------
-    private static void shortestPath(String[] readings, Node start, Node goal) {
+    private static long shortestPath(String[] readings, Node start, Node goal) {
+        //start timer
+        long startTime = System.nanoTime();
+
         PriorityQueue<Node> openSet = new PriorityQueue<>();
         openSet.add(start);
 
@@ -54,8 +57,10 @@ public class Main {
 
             if (current.equals(goal)) {
                 // Path found
+                //stop timer
+                long endTime = System.nanoTime();
                 reconstructPath(cameFrom, current, start, goal);
-                return;
+                return endTime - startTime;
             }
 
             for (Node neighbor : getNeighbors(current, readings, goal)) {
@@ -75,6 +80,10 @@ public class Main {
                 }
             }
         }
+        // Path not found
+        long endTime = System.nanoTime();
+        System.out.println("No path found.");
+        return endTime - startTime;
     }
 
     private static int distBetween(Node current, Node neighbor) {
@@ -153,29 +162,57 @@ public class Main {
         return Math.abs(start.x - goal.x) + Math.abs(start.y - goal.y);
     }
 
-    private static List<Node> reconstructPath(Map<Node, Node> cameFrom, Node current, Node start, Node goal) {
+    private static void reconstructPath(Map<Node, Node> cameFrom, Node current, Node start, Node goal) {
         System.out.println("\nPath found: ");
         List<Node> totalPath = new ArrayList<>();
         totalPath.add(current);
-        System.out.println("Starting from: " + start.x + ", " + start.y);
 
-        //print the rest of the path in the format of "direction to (x, y)"
+        // Add the rest of the path to the totalPath list
         while (cameFrom.containsKey(current)) {
             current = cameFrom.get(current);
             totalPath.add(current);
 
-            System.out.println(switchDirection(current, cameFrom.get(current)) + "to: " + current.x + ", " + current.y);
-
-            //end the loop if the current node is the start node
+            // End the loop if the current node is the start node
             if (current.equals(start)) {
                 break;
             }
         }
 
+        // Reverse the totalPath list to print the middle moves in reverse order
+        Collections.reverse(totalPath);
+
+        //get the direction travelled
+        String direction = "";
+        for (int i = 0; i < totalPath.size(); i++) {
+            if (i == 0) {
+                System.out.println("Starting from: " + totalPath.get(i).x + ", " + totalPath.get(i).y);
+            } else {
+                if (totalPath.get(i).x > totalPath.get(i - 1).x) {
+                    direction = "right";
+                } else if (totalPath.get(i).x < totalPath.get(i - 1).x) {
+                    direction = "left";
+                } else if (totalPath.get(i).y > totalPath.get(i - 1).y) {
+                    direction = "down";
+                } else if (totalPath.get(i).y < totalPath.get(i - 1).y) {
+                    direction = "up";
+                }
+                System.out.println(direction + " to: " + totalPath.get(i).x + ", " + totalPath.get(i).y);
+            }
+        }
+
+        // Print the goal node
         System.out.println("Ending at: " + goal.x + ", " + goal.y);
 
-        Collections.reverse(totalPath);
-        return totalPath;
+        // Print the total number of moves
+        System.out.print("\nTotal moves: " + (totalPath.size() - 1));
+
+        // Print the total number of blocks travelled calculated by the each mode's coordinate difference
+        int totalBlocks = 0;
+        for (int i = 0; i < totalPath.size() - 1; i++) {
+            totalBlocks += Math.abs(totalPath.get(i).x - totalPath.get(i + 1).x) + Math.abs(totalPath.get(i).y - totalPath.get(i + 1).y);
+        }
+        System.out.print("   Total steps of blocks: " + totalBlocks + "\n");
+
     }
 
     public static void main() {
@@ -187,7 +224,9 @@ public class Main {
         Node start = new Node(startFinish[0], startFinish[1]);
         Node goal = new Node(startFinish[2], startFinish[3]);
 
-        shortestPath(readings, start, goal);
+        long time = shortestPath(readings, start, goal);
+
+        System.out.println("\nTime taken: " + time/1000000 + " milliseconds");
 
         System.out.println("Program ended.");
         System.exit(0);

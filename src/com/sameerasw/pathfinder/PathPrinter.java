@@ -81,7 +81,7 @@ public class PathPrinter {
         }
     }
 
-    private static String switchDirection(int i) {
+    public static String switchDirection(int i) {
         return switch (i) {
             case 0 -> "Move up" + ANSI_CYAN + " ↑ " + ANSI_RESET;
             case 1 -> "Move right" + ANSI_CYAN + " → " + ANSI_RESET;
