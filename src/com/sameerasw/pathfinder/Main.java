@@ -66,7 +66,8 @@ public class Main {
                     continue;
                 }
 
-                int tentativeGScore = current.gScore + distBetween(current, neighbor);
+                // Calculate the tentative gScore (travel distance difference is always 1)
+                int tentativeGScore = current.gScore + 1;
 
                 if (tentativeGScore < neighbor.gScore) {
                     if (!cameFrom.containsKey(neighbor)) {
@@ -87,10 +88,6 @@ public class Main {
         System.out.println("No path found.");
         long endTime = System.nanoTime();
         return endTime - startTime;
-    }
-
-    private static int distBetween(Node current, Node neighbor) {
-        return 1;
     }
 
     private static List<Node> getNeighbors(Node current, String[] readings, Node goal) {
@@ -218,7 +215,7 @@ public class Main {
 
     }
 
-    public static void main() {
+    public static void main(String[] args) {
         System.out.println("Program started.");
         FileReader fileReader = new FileReader();
         String[] readings = fileReader.readFile();
