@@ -1,8 +1,5 @@
 package com.sameerasw.pathfinder;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 public class PathPrinter {
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLACK_BACKGROUND = "\u001B[40m";
@@ -14,6 +11,7 @@ public class PathPrinter {
     public static final String ANSI_RED = "\u001B[31m";
 
     public static int[] printArray(String[] arr) {
+        // Print the array with colors and return the start and finish coordinates
         int[] start = new int[0];
         int[] finish = new int[0];
         int[] output;
@@ -48,6 +46,7 @@ public class PathPrinter {
         }
 
         if (c == '0' || c == '.') {
+            // print only the background color of the block
             System.out.print("   ");
         } else {
             System.out.print(" " + c + " ");
@@ -56,13 +55,4 @@ public class PathPrinter {
         System.out.print(ANSI_RESET);
     }
 
-    public static String switchDirection(int i) {
-        return switch (i) {
-            case 0 -> "Move up" + ANSI_CYAN + " ↑ " + ANSI_RESET;
-            case 1 -> "Move right" + ANSI_CYAN + " → " + ANSI_RESET;
-            case 2 -> "Move down" + ANSI_CYAN + " ↓ " + ANSI_RESET;
-            case 3 -> "Move left" + ANSI_CYAN + " ← " + ANSI_RESET;
-            default -> "Starting from ";
-        };
-    }
 }

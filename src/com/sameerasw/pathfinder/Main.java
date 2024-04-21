@@ -7,47 +7,20 @@ import static com.sameerasw.pathfinder.PathPrinter.*;
 public class Main {
 
     //-------------debugging purposes only-------------------
-
-    //0: no logging, 1: print the finishing nodes and the maze, 2: print the steps and the history at each step, 3: print the full history (use only for debugging small mazes)
-    private static final int loggingLevel = 0;
-    public static boolean logging;
-    public static boolean moveLogging;
-    public static boolean fullLogging;
-
-    static {
-        switch (loggingLevel) {
-            case 0 -> {
-                logging = false;
-                moveLogging = false;
-                fullLogging = false;
-            }
-            case 1 -> {
-                logging = true;
-                moveLogging = false;
-                fullLogging = false;
-            }
-            case 2 -> {
-                logging = true;
-                moveLogging = true;
-                fullLogging = false;
-            }
-            case 3 -> {
-                logging = true;
-                moveLogging = true;
-                fullLogging = true;
-            }
-        }
-    }
-
+    public static boolean logging = false;
     //-------------------------------------------------------
+
     private static long shortestPath(String[] readings, Node start, Node goal) {
+        // Implement the A* algorithm to find the shortest path from the start node to the goal node
+
+        // Start the timer
         long startTime = System.nanoTime();
 
         PriorityQueue<Node> openSet = new PriorityQueue<>();
-        openSet.add(start);
-
         Map<Node, Node> cameFrom = new HashMap<>();
-        Set<Node> visited = new HashSet<>(); // Create a set to keep track of visited nodes
+        Set<Node> visited = new HashSet<>();
+
+        openSet.add(start);
 
         start.gScore = 0;
         start.fScore = heuristicCostEstimate(start, goal);
@@ -56,13 +29,15 @@ public class Main {
             Node current = openSet.poll();
 
             if (current.equals(goal)) {
+                // End the timer and reconstruct the path if the goal node is reached
                 long endTime = System.nanoTime();
                 reconstructPath(cameFrom, current, start, goal);
                 return endTime - startTime;
             }
 
             for (Node neighbor : getNeighbors(current, readings, goal)) {
-                if (visited.contains(neighbor)) { // Skip if the neighbor has already been visited
+                if (visited.contains(neighbor)) {
+                    // Skip if the neighbor has already been visited
                     continue;
                 }
 
@@ -70,6 +45,7 @@ public class Main {
                 int tentativeGScore = current.gScore + 1;
 
                 if (tentativeGScore < neighbor.gScore) {
+                    // Update the neighbor node if the tentative gScore is less than the current gScore
                     if (!cameFrom.containsKey(neighbor)) {
                         cameFrom.put(neighbor, current);
                     }
@@ -91,6 +67,7 @@ public class Main {
     }
 
     private static List<Node> getNeighbors(Node current, String[] readings, Node goal) {
+        // Get the neighbors of the current node (in the main directions at the furthest point)
         List<Node> neighbors = new ArrayList<>();
         int x = current.x;
         int y = current.y;
@@ -100,9 +77,9 @@ public class Main {
 
         int direction = 0;
         while (direction < 4) {
-
             do {
                 switch (direction) {
+                    // increment x or y based on the direction
                     case 0 -> {
                         y--;
                     }
@@ -119,12 +96,14 @@ public class Main {
             } while ((Node.getNode(new Node(x, y), readings) != '0') && (Node.getNode(new Node(x, y), readings) != 'F'));
 
             if (Node.getNode(new Node(x, y), readings) == 'F') {
+                //if the goal is found, add it to the neighbors list
                 System.out.println("Goal found at x:" + x + " y:" + y);
                 neighbors.add(goal);
                 break;
             }
 
             if (Node.getNode(new Node(x, y), readings) == '0') {
+                //if the node is empty, add the previous node to the neighbors list
                 switch (direction) {
                     case 0 -> {
                         y++;
@@ -143,7 +122,8 @@ public class Main {
             }
 
             if (x != xStart || y != yStart) {
-                if (fullLogging)
+                //if the x or y has changed, add the node to the neighbors list
+                if (logging)
                     System.out.println("direction: " + direction + " x:" + x + " y:" + y);
                 neighbors.add(new Node(x, y));
             }
@@ -154,34 +134,35 @@ public class Main {
 
             direction++;
         }
-
         return neighbors;
     }
 
     private static int heuristicCostEstimate(Node start, Node goal) {
+        // Calculate the heuristic cost estimate using the Manhattan distance (x and y coordinate difference)
         return Math.abs(start.x - goal.x) + Math.abs(start.y - goal.y);
     }
 
     private static void reconstructPath(Map<Node, Node> cameFrom, Node current, Node start, Node goal) {
+        // Reconstruct the path from the goal node to the start node
         System.out.println("\nPath found: ");
         List<Node> totalPath = new ArrayList<>();
         totalPath.add(current);
 
-        // Add the rest of the path to the totalPath list
         while (cameFrom.containsKey(current)) {
+            // Add the current node to the totalPath list while backtracking
             current = cameFrom.get(current);
             totalPath.add(current);
 
-            // End the loop if the current node is the start node
             if (current.equals(start)) {
+                // End the loop if the current node is the start node
                 break;
             }
         }
 
-        // Reverse the totalPath list to print the middle moves in reverse order
+        // Reverse the totalPath list to print the middle moves in order
         Collections.reverse(totalPath);
 
-        //get the direction travelled
+        // Print the path of moves with directions
         String direction = "";
         for (int i = 0; i < totalPath.size(); i++) {
             if (i == 0) {
@@ -199,20 +180,17 @@ public class Main {
                 System.out.println(ANSI_CYAN + direction + ANSI_RESET + " to: " + totalPath.get(i).x + ", " + totalPath.get(i).y);
             }
         }
-
-        // Print the goal node
-        System.out.println("Ending at: "+ ANSI_RED + goal.x + ", " + goal.y + ANSI_RESET);
+        System.out.println("Ending at: " + ANSI_RED + goal.x + ", " + goal.y + ANSI_RESET);
 
         // Print the total number of moves
         System.out.print("\nTotal moves: " + (totalPath.size() - 1));
 
-        // Print the total number of blocks travelled calculated by the mode's coordinate difference
+        // Print the total number of blocks travelled calculated by the node's coordinate difference
         int totalBlocks = 0;
         for (int i = 0; i < totalPath.size() - 1; i++) {
             totalBlocks += Math.abs(totalPath.get(i).x - totalPath.get(i + 1).x) + Math.abs(totalPath.get(i).y - totalPath.get(i + 1).y);
         }
         System.out.print("   Total steps of blocks: " + totalBlocks + "\n");
-
     }
 
     public static void main(String[] args) {
@@ -226,7 +204,7 @@ public class Main {
 
         long time = shortestPath(readings, start, goal);
 
-        System.out.println("\nTime taken: " + ANSI_CYAN + ANSI_REVERSED + " " + time/1000000 + " milliseconds " + ANSI_RESET);
+        System.out.println("\nTime taken: " + ANSI_CYAN + ANSI_REVERSED + " " + time / 1000000 + " milliseconds " + ANSI_RESET);
 
         System.out.println("Program ended.");
         System.exit(0);

@@ -1,6 +1,6 @@
 package com.sameerasw.pathfinder;
 
-import java.util.*;
+import java.util.Objects;
 
 public class Node implements Comparable<Node> {
     int x, y;
@@ -23,19 +23,21 @@ public class Node implements Comparable<Node> {
 
     @Override
     public int compareTo(Node other) {
+        // Compare the fScore of the nodes
         return Integer.compare(this.fScore, other.fScore);
     }
 
     @Override
     public boolean equals(Object o) {
+        // Check if the nodes are equal
         if (this == o) return true;
-        if (!(o instanceof Node)) return false;
-        Node node = (Node) o;
+        if (!(o instanceof Node node)) return false;
         return x == node.x && y == node.y;
     }
 
     @Override
     public int hashCode() {
+        // Generate a hash code for the nodes
         return Objects.hash(x, y);
     }
 }

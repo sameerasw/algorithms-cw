@@ -40,7 +40,7 @@ public class FileReader {
                     System.exit(0);
                 }
 
-                //check if the file exists
+                //re-check if the file exists
                 if (!file.exists()) {
                     System.out.println("File not found, exiting the program");
                     System.exit(0);
@@ -53,6 +53,7 @@ public class FileReader {
         try {
             Scanner scanner = new Scanner(new File(String.valueOf(file)));
             while (scanner.hasNextLine()) {
+                //read the file line by line
                 String line = scanner.nextLine();
                 readings = Arrays.copyOf(readings, readings.length + 1);
                 readings[readings.length - 1] = line;
@@ -60,9 +61,9 @@ public class FileReader {
             scanner.close();
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred while reading " + filename);
-         }
+        }
 
-        //strip spaces from the array
+        //strip spaces from the array if any
         for (int i = 0; i < readings.length; i++) {
             readings[i] = readings[i].strip();
         }
