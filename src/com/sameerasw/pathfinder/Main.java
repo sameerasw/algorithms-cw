@@ -185,7 +185,7 @@ public class Main {
         String direction = "";
         for (int i = 0; i < totalPath.size(); i++) {
             if (i == 0) {
-                System.out.println("Starting from: " + totalPath.get(i).x + ", " + totalPath.get(i).y);
+                System.out.println("Starting from: " + ANSI_GREEN + totalPath.get(i).x + ", " + totalPath.get(i).y + ANSI_RESET);
             } else {
                 if (totalPath.get(i).x > totalPath.get(i - 1).x) {
                     direction = "right";
@@ -196,12 +196,12 @@ public class Main {
                 } else if (totalPath.get(i).y < totalPath.get(i - 1).y) {
                     direction = "up";
                 }
-                System.out.println(direction + " to: " + totalPath.get(i).x + ", " + totalPath.get(i).y);
+                System.out.println(ANSI_CYAN + direction + ANSI_RESET + " to: " + totalPath.get(i).x + ", " + totalPath.get(i).y);
             }
         }
 
         // Print the goal node
-        System.out.println("Ending at: " + goal.x + ", " + goal.y);
+        System.out.println("Ending at: "+ ANSI_RED + goal.x + ", " + goal.y + ANSI_RESET);
 
         // Print the total number of moves
         System.out.print("\nTotal moves: " + (totalPath.size() - 1));
@@ -226,7 +226,7 @@ public class Main {
 
         long time = shortestPath(readings, start, goal);
 
-        System.out.println("\nTime taken: " + time/1000000 + " milliseconds");
+        System.out.println("\nTime taken: " + ANSI_CYAN + ANSI_REVERSED + " " + time/1000000 + " milliseconds " + ANSI_RESET);
 
         System.out.println("Program ended.");
         System.exit(0);
