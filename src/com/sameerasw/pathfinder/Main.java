@@ -40,7 +40,7 @@ public class Main {
     }
 
     //-------------------------------------------------------
-    public static List<Node> shortestPath(String[] readings, Node start, Node goal) {
+    private static void shortestPath(String[] readings, Node start, Node goal) {
         PriorityQueue<Node> openSet = new PriorityQueue<>();
         openSet.add(start);
 
@@ -54,14 +54,18 @@ public class Main {
 
             if (current.equals(goal)) {
                 // Path found
-                return reconstructPath(cameFrom, current);
+                reconstructPath(cameFrom, current, start, goal);
+                return;
             }
 
             for (Node neighbor : getNeighbors(current, readings, goal)) {
                 int tentativeGScore = current.gScore + distBetween(current, neighbor);
 
                 if (tentativeGScore < neighbor.gScore) {
-                    cameFrom.put(neighbor, current);
+                    // Only put the neighbor in the cameFrom map if it's not already present
+                    if (!cameFrom.containsKey(neighbor)) {
+                        cameFrom.put(neighbor, current);
+                    }
                     neighbor.gScore = tentativeGScore;
                     neighbor.fScore = neighbor.gScore + heuristicCostEstimate(neighbor, goal);
 
@@ -71,8 +75,6 @@ public class Main {
                 }
             }
         }
-
-        return new ArrayList<>(); // No path was found
     }
 
     private static int distBetween(Node current, Node neighbor) {
@@ -108,7 +110,7 @@ public class Main {
             } while ((Node.getNode(new Node(x, y), readings) != '0') && (Node.getNode(new Node(x, y), readings) != 'F'));
 
             if (Node.getNode(new Node(x, y), readings) == 'F') {
-                System.out.println("Goal found at x: " + x + " y: " + y);
+                System.out.println("Goal found at x:" + x + " y:" + y);
                 neighbors.add(goal);
                 break;
             }
@@ -133,7 +135,7 @@ public class Main {
 
             if (x != xStart || y != yStart) {
                 if (fullLogging)
-                    System.out.println("direction: " + direction + " x: " + x + " y: " + y);
+                    System.out.println("direction: " + direction + " x:" + x + " y:" + y);
                 neighbors.add(new Node(x, y));
             }
 
@@ -151,14 +153,26 @@ public class Main {
         return Math.abs(start.x - goal.x) + Math.abs(start.y - goal.y);
     }
 
-    private static List<Node> reconstructPath(Map<Node, Node> cameFrom, Node current) {
+    private static List<Node> reconstructPath(Map<Node, Node> cameFrom, Node current, Node start, Node goal) {
+        System.out.println("\nPath found: ");
         List<Node> totalPath = new ArrayList<>();
         totalPath.add(current);
+        System.out.println("Starting from: " + start.x + ", " + start.y);
 
+        //print the rest of the path in the format of "direction to (x, y)"
         while (cameFrom.containsKey(current)) {
             current = cameFrom.get(current);
             totalPath.add(current);
+
+            System.out.println(switchDirection(current, cameFrom.get(current)) + "to: " + current.x + ", " + current.y);
+
+            //end the loop if the current node is the start node
+            if (current.equals(start)) {
+                break;
+            }
         }
+
+        System.out.println("Ending at: " + goal.x + ", " + goal.y);
 
         Collections.reverse(totalPath);
         return totalPath;
@@ -173,18 +187,10 @@ public class Main {
         Node start = new Node(startFinish[0], startFinish[1]);
         Node goal = new Node(startFinish[2], startFinish[3]);
 
-        List<Node> path = shortestPath(readings, start, goal);
-        ArrayList<int[]> results = new ArrayList<>();
-
-        for (Node node : path) {
-            results.add(new int[]{node.x, node.y});
-        }
-
-        results.add(new int[]{path.size(), path.get(path.size()-1).gScore});
-        printHistory(results);
-        finalResult(results);
+        shortestPath(readings, start, goal);
 
         System.out.println("Program ended.");
+        System.exit(0);
 
     }
 }
