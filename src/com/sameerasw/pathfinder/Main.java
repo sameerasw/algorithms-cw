@@ -41,13 +41,13 @@ public class Main {
 
     //-------------------------------------------------------
     private static long shortestPath(String[] readings, Node start, Node goal) {
-        //start timer
         long startTime = System.nanoTime();
 
         PriorityQueue<Node> openSet = new PriorityQueue<>();
         openSet.add(start);
 
         Map<Node, Node> cameFrom = new HashMap<>();
+        Set<Node> visited = new HashSet<>(); // Create a set to keep track of visited nodes
 
         start.gScore = 0;
         start.fScore = heuristicCostEstimate(start, goal);
@@ -56,18 +56,19 @@ public class Main {
             Node current = openSet.poll();
 
             if (current.equals(goal)) {
-                // Path found
-                //stop timer
                 long endTime = System.nanoTime();
                 reconstructPath(cameFrom, current, start, goal);
                 return endTime - startTime;
             }
 
             for (Node neighbor : getNeighbors(current, readings, goal)) {
+                if (visited.contains(neighbor)) { // Skip if the neighbor has already been visited
+                    continue;
+                }
+
                 int tentativeGScore = current.gScore + distBetween(current, neighbor);
 
                 if (tentativeGScore < neighbor.gScore) {
-                    // Only put the neighbor in the cameFrom map if it's not already present
                     if (!cameFrom.containsKey(neighbor)) {
                         cameFrom.put(neighbor, current);
                     }
@@ -79,10 +80,12 @@ public class Main {
                     }
                 }
             }
+
+            visited.add(current); // Mark the current node as visited
         }
-        // Path not found
-        long endTime = System.nanoTime();
+
         System.out.println("No path found.");
+        long endTime = System.nanoTime();
         return endTime - startTime;
     }
 
@@ -206,7 +209,7 @@ public class Main {
         // Print the total number of moves
         System.out.print("\nTotal moves: " + (totalPath.size() - 1));
 
-        // Print the total number of blocks travelled calculated by the each mode's coordinate difference
+        // Print the total number of blocks travelled calculated by the mode's coordinate difference
         int totalBlocks = 0;
         for (int i = 0; i < totalPath.size() - 1; i++) {
             totalBlocks += Math.abs(totalPath.get(i).x - totalPath.get(i + 1).x) + Math.abs(totalPath.get(i).y - totalPath.get(i + 1).y);

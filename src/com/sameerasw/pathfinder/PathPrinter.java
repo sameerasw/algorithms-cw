@@ -56,32 +56,6 @@ public class PathPrinter {
         System.out.print(ANSI_RESET);
     }
 
-    public static void printHistory(ArrayList<int[]> history) {
-        System.out.println("History: ");
-        for (int[] node : history) {
-            System.out.println(Arrays.toString(node));
-        }
-    }
-
-    public static void finalResult(ArrayList<int[]> results) {
-        if (results.isEmpty()) {
-            System.out.println("No path found.");
-        } else {
-            System.out.println("\nShortest path in " + ANSI_CYAN + ANSI_REVERSED + results.get(results.size()-2)[3] + ANSI_RESET + " blocks/ " + ANSI_CYAN + ANSI_REVERSED + (results.size()-2) + ANSI_RESET + " moves.");
-            try {
-                for (int i = 0; i < results.size(); i++) {
-                    if (i == 0) {
-                        System.out.println(ANSI_GREEN + "Starting from (" + results.get(i)[0] + ", " + results.get(i)[1] + ")" + ANSI_RESET);
-                    } else {
-                        System.out.println(switchDirection(results.get(i)[2]) + "to (" + results.get(i + 1)[0] + ", " + results.get(i + 1)[1] + ")");
-                    }
-                }
-            } catch (IndexOutOfBoundsException e) {
-                System.out.println(ANSI_BLUE + "Finishing at (" + results.getLast()[0] + ", " + results.getLast()[1] + ")" + ANSI_RESET);
-            }
-        }
-    }
-
     public static String switchDirection(int i) {
         return switch (i) {
             case 0 -> "Move up" + ANSI_CYAN + " ↑ " + ANSI_RESET;
