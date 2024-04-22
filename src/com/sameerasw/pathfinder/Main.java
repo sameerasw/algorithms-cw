@@ -164,7 +164,7 @@ public class Main {
                 System.out.println("Move " + ANSI_CYAN + direction + ANSI_RESET + " to: (" + totalPath.get(i).x + ", " + totalPath.get(i).y + ")");
             }
         }
-        System.out.println("Ending at: (" + ANSI_RED + goal.x + ", " + goal.y + ANSI_RESET + ")\n");
+        System.out.println("Finishing at: (" + ANSI_RED + goal.x + ", " + goal.y + ANSI_RESET + ")\n");
 
         // Print the total number of moves
         System.out.print("\nTotal moves: " + (totalPath.size() - 1));

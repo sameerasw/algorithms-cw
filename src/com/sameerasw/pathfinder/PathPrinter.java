@@ -1,6 +1,9 @@
 package com.sameerasw.pathfinder;
 
 public class PathPrinter {
+    // Print the path with colors
+    // https://stackoverflow.com/questions/5762491/how-to-print-color-in-console-using-system-out-println
+    // https://www.w3schools.blog/ansi-colors-java
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLACK_BACKGROUND = "\u001B[40m";
     public static final String ANSI_RED_BACKGROUND = "\u001B[41m";

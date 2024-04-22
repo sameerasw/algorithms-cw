@@ -10,6 +10,7 @@ import static com.sameerasw.pathfinder.PathPrinter.ANSI_GREEN;
 import static com.sameerasw.pathfinder.PathPrinter.ANSI_RESET;
 
 public class FileReader {
+    // Read the file and return the content as a string array
     public String[] readFile() {
         // Read the file and return the content as a string array
         //look for data.txt and if it's not found open a file picker
