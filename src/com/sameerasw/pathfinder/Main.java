@@ -80,18 +80,10 @@ public class Main {
             do {
                 switch (direction) {
                     // increment x or y based on the direction
-                    case 0 -> {
-                        y--;
-                    }
-                    case 1 -> {
-                        x++;
-                    }
-                    case 2 -> {
-                        y++;
-                    }
-                    case 3 -> {
-                        x--;
-                    }
+                    case 0 -> y--;
+                    case 1 -> x++;
+                    case 2 -> y++;
+                    case 3 -> x--;
                 }
             } while ((Node.getNode(new Node(x, y), readings) != '0') && (Node.getNode(new Node(x, y), readings) != 'F'));
 
@@ -105,18 +97,10 @@ public class Main {
             if (Node.getNode(new Node(x, y), readings) == '0') {
                 //if the node is empty, add the previous node to the neighbors list
                 switch (direction) {
-                    case 0 -> {
-                        y++;
-                    }
-                    case 1 -> {
-                        x--;
-                    }
-                    case 2 -> {
-                        y--;
-                    }
-                    case 3 -> {
-                        x++;
-                    }
+                    case 0 -> y++;
+                    case 1 -> x--;
+                    case 2 -> y--;
+                    case 3 -> x++;
                 }
                 neighbors.add(new Node(x, y));
             }
@@ -124,7 +108,7 @@ public class Main {
             if (x != xStart || y != yStart) {
                 //if the x or y has changed, add the node to the neighbors list
                 if (logging)
-                    System.out.println("direction: " + direction + " x:" + x + " y:" + y);
+                    System.out.println("Checking direction: " + direction + " x:" + x + " y:" + y);
                 neighbors.add(new Node(x, y));
             }
 
@@ -166,7 +150,7 @@ public class Main {
         String direction = "";
         for (int i = 0; i < totalPath.size(); i++) {
             if (i == 0) {
-                System.out.println("Starting from: " + ANSI_GREEN + totalPath.get(i).x + ", " + totalPath.get(i).y + ANSI_RESET);
+                System.out.println("Starting from: (" + ANSI_GREEN + totalPath.get(i).x + ", " + totalPath.get(i).y + ANSI_RESET + ")");
             } else {
                 if (totalPath.get(i).x > totalPath.get(i - 1).x) {
                     direction = "right";
@@ -177,10 +161,10 @@ public class Main {
                 } else if (totalPath.get(i).y < totalPath.get(i - 1).y) {
                     direction = "up";
                 }
-                System.out.println(ANSI_CYAN + direction + ANSI_RESET + " to: " + totalPath.get(i).x + ", " + totalPath.get(i).y);
+                System.out.println("Move " + ANSI_CYAN + direction + ANSI_RESET + " to: (" + totalPath.get(i).x + ", " + totalPath.get(i).y + ")");
             }
         }
-        System.out.println("Ending at: " + ANSI_RED + goal.x + ", " + goal.y + ANSI_RESET);
+        System.out.println("Ending at: (" + ANSI_RED + goal.x + ", " + goal.y + ANSI_RESET + ")\n");
 
         // Print the total number of moves
         System.out.print("\nTotal moves: " + (totalPath.size() - 1));
