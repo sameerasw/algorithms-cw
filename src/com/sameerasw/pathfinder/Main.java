@@ -10,47 +10,47 @@ public class Main {
     public static boolean logging = false;
     //-------------------------------------------------------
 
-    private static long shortestPath(String[] readings, Node start, Node goal) {
-        // Implement the A* algorithm to find the shortest path from the start node to the goal node
+    private static long shortestPath(String[] maze, Node start, Node finish) {
+        // Implement the A* algorithm to find the shortest path from the start node to the finish node
 
         // Start the timer
         long startTime = System.nanoTime();
 
         PriorityQueue<Node> openSet = new PriorityQueue<>();
-        Map<Node, Node> cameFrom = new HashMap<>();
-        Set<Node> visited = new HashSet<>();
+        Map<Node, Node> history = new HashMap<>();
+        Set<Node> visitedNodes = new HashSet<>();
 
         openSet.add(start);
 
         start.gScore = 0;
-        start.fScore = heuristicCostEstimate(start, goal);
+        start.fScore = hCost(start, finish);
 
         while (!openSet.isEmpty()) {
             Node current = openSet.poll();
 
-            if (current.equals(goal)) {
-                // End the timer and reconstruct the path if the goal node is reached
+            if (current.equals(finish)) {
+                // End the timer and reconstruct the path if the finish node is reached
                 long endTime = System.nanoTime();
-                reconstructPath(cameFrom, current, start, goal);
+                generateFinalPath(history, current, start, finish);
                 return endTime - startTime;
             }
 
-            for (Node neighbor : getNeighbors(current, readings, goal)) {
-                if (visited.contains(neighbor)) {
-                    // Skip if the neighbor has already been visited
+            for (Node neighbor : getNeighbors(current, maze, finish)) {
+                if (visitedNodes.contains(neighbor)) {
+                    // Skip if the neighbor has already been visitedNodes
                     continue;
                 }
 
                 // Calculate the tentative gScore (travel distance difference is always 1)
-                int tentativeGScore = current.gScore + 1;
+                int newgScore = current.gScore + 1;
 
-                if (tentativeGScore < neighbor.gScore) {
+                if (newgScore < neighbor.gScore) {
                     // Update the neighbor node if the tentative gScore is less than the current gScore
-                    if (!cameFrom.containsKey(neighbor)) {
-                        cameFrom.put(neighbor, current);
+                    if (!history.containsKey(neighbor)) {
+                        history.put(neighbor, current);
                     }
-                    neighbor.gScore = tentativeGScore;
-                    neighbor.fScore = neighbor.gScore + heuristicCostEstimate(neighbor, goal);
+                    neighbor.gScore = newgScore;
+                    neighbor.fScore = neighbor.gScore + hCost(neighbor, finish);
 
                     if (!openSet.contains(neighbor)) {
                         openSet.add(neighbor);
@@ -58,7 +58,7 @@ public class Main {
                 }
             }
 
-            visited.add(current); // Mark the current node as visited
+            visitedNodes.add(current); // Mark the current node as visitedNodes
         }
 
         System.out.println("No path found.");
@@ -66,11 +66,11 @@ public class Main {
         return endTime - startTime;
     }
 
-    private static List<Node> getNeighbors(Node current, String[] readings, Node goal) {
-        // Get the neighbors of the current node (in the main directions at the furthest point)
+    private static List<Node> getNeighbors(Node active, String[] maze, Node finish) {
+        // Get the neighbors of the active node (in the main directions at the furthest point)
         List<Node> neighbors = new ArrayList<>();
-        int x = current.x;
-        int y = current.y;
+        int x = active.x;
+        int y = active.y;
 
         int xStart = x;
         int yStart = y;
@@ -85,16 +85,16 @@ public class Main {
                     case 2 -> y++;
                     case 3 -> x--;
                 }
-            } while ((Node.getNode(new Node(x, y), readings) != '0') && (Node.getNode(new Node(x, y), readings) != 'F'));
+            } while ((Node.getNode(new Node(x, y), maze) != '0') && (Node.getNode(new Node(x, y), maze) != 'F'));
 
-            if (Node.getNode(new Node(x, y), readings) == 'F') {
-                //if the goal is found, add it to the neighbors list
+            if (Node.getNode(new Node(x, y), maze) == 'F') {
+                //if the finish is found, add it to the neighbors list
                 System.out.println("Goal found at x:" + x + " y:" + y);
-                neighbors.add(goal);
+                neighbors.add(finish);
                 break;
             }
 
-            if (Node.getNode(new Node(x, y), readings) == '0') {
+            if (Node.getNode(new Node(x, y), maze) == '0') {
                 //if the node is empty, add the previous node to the neighbors list
                 switch (direction) {
                     case 0 -> y++;
@@ -121,24 +121,24 @@ public class Main {
         return neighbors;
     }
 
-    private static int heuristicCostEstimate(Node start, Node goal) {
+    private static int hCost(Node start, Node goal) {
         // Calculate the heuristic cost estimate using the Manhattan distance (x and y coordinate difference)
         return Math.abs(start.x - goal.x) + Math.abs(start.y - goal.y);
     }
 
-    private static void reconstructPath(Map<Node, Node> cameFrom, Node current, Node start, Node goal) {
-        // Reconstruct the path from the goal node to the start node
+    private static void generateFinalPath(Map<Node, Node> history, Node active, Node start, Node finish) {
+        // Reconstruct the path from the finish node to the start node
         System.out.println("\nPath found: ");
         List<Node> totalPath = new ArrayList<>();
-        totalPath.add(current);
+        totalPath.add(active);
 
-        while (cameFrom.containsKey(current)) {
-            // Add the current node to the totalPath list while backtracking
-            current = cameFrom.get(current);
-            totalPath.add(current);
+        while (history.containsKey(active)) {
+            // Add the active node to the totalPath list while backtracking
+            active = history.get(active);
+            totalPath.add(active);
 
-            if (current.equals(start)) {
-                // End the loop if the current node is the start node
+            if (active.equals(start)) {
+                // End the loop if the active node is the start node
                 break;
             }
         }
@@ -164,7 +164,7 @@ public class Main {
                 System.out.println(i + ". Move " + ANSI_CYAN + direction + ANSI_RESET + " to: (" + totalPath.get(i).x + ", " + totalPath.get(i).y + ")");
             }
         }
-        System.out.println("> Finishing at: (" + ANSI_RED + goal.x + ", " + goal.y + ANSI_RESET + ")\n");
+        System.out.println("> Finishing at: (" + ANSI_RED + finish.x + ", " + finish.y + ANSI_RESET + ")\n");
 
         // Print the total number of moves
         System.out.print("\nTotal moves: " + (totalPath.size() - 1));
@@ -180,13 +180,13 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Program started.");
         FileReader fileReader = new FileReader();
-        String[] readings = fileReader.readFile();
+        String[] maze = fileReader.readFile();
 
-        int[] startFinish = printArray(readings);
+        int[] startFinish = printArray(maze);
         Node start = new Node(startFinish[0], startFinish[1]);
-        Node goal = new Node(startFinish[2], startFinish[3]);
+        Node finish = new Node(startFinish[2], startFinish[3]);
 
-        long time = shortestPath(readings, start, goal);
+        long time = shortestPath(maze, start, finish);
 
         System.out.println("\nTime taken: " + ANSI_CYAN + ANSI_REVERSED + " " + time / 1000000 + " milliseconds " + ANSI_RESET);
 
