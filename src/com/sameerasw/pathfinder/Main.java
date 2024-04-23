@@ -150,7 +150,7 @@ public class Main {
         String direction = "";
         for (int i = 0; i < totalPath.size(); i++) {
             if (i == 0) {
-                System.out.println("Starting from: (" + ANSI_GREEN + totalPath.get(i).x + ", " + totalPath.get(i).y + ANSI_RESET + ")");
+                System.out.println("> Starting from: (" + ANSI_GREEN + totalPath.get(i).x + ", " + totalPath.get(i).y + ANSI_RESET + ")");
             } else {
                 if (totalPath.get(i).x > totalPath.get(i - 1).x) {
                     direction = "right";
@@ -161,10 +161,10 @@ public class Main {
                 } else if (totalPath.get(i).y < totalPath.get(i - 1).y) {
                     direction = "up";
                 }
-                System.out.println("Move " + ANSI_CYAN + direction + ANSI_RESET + " to: (" + totalPath.get(i).x + ", " + totalPath.get(i).y + ")");
+                System.out.println(i + ". Move " + ANSI_CYAN + direction + ANSI_RESET + " to: (" + totalPath.get(i).x + ", " + totalPath.get(i).y + ")");
             }
         }
-        System.out.println("Finishing at: (" + ANSI_RED + goal.x + ", " + goal.y + ANSI_RESET + ")\n");
+        System.out.println("> Finishing at: (" + ANSI_RED + goal.x + ", " + goal.y + ANSI_RESET + ")\n");
 
         // Print the total number of moves
         System.out.print("\nTotal moves: " + (totalPath.size() - 1));
