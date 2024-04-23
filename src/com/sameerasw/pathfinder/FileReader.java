@@ -69,6 +69,15 @@ public class FileReader {
             readings[i] = readings[i].strip();
         }
 
+        //strip any lines that are not part of the maze or full at the end
+        for (int i = readings.length - 1; i >= 0; i--) {
+            if (readings[i].isEmpty()) {
+                readings = Arrays.copyOf(readings, readings.length - 1);
+            } else {
+                break;
+            }
+        }
+
         return readings;
     }
 }
