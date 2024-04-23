@@ -123,7 +123,7 @@ public class Main {
     }
 
     private static void generateFinalPath(Map<Node, Node> history, Node active, Node start, Node finish) {
-        // Reconstruct the path from the finish node to the start node
+        // Reconstruct the path from the finish node to the start node, 1 will be added to each coordinate to match the maze coordinates
         System.out.println("\nPath found: ");
         List<Node> totalPath = new ArrayList<>();
         totalPath.add(active);
@@ -146,7 +146,7 @@ public class Main {
         String direction = "";
         for (int i = 0; i < totalPath.size(); i++) {
             if (i == 0) {
-                System.out.println("> Starting from: (" + ANSI_GREEN + totalPath.get(i).x + ", " + totalPath.get(i).y + ANSI_RESET + ")");
+                System.out.println("> Starting from: (" + ANSI_GREEN + (totalPath.get(i).x+1) + ", " + (totalPath.get(i).y+1) + ANSI_RESET + ")");
             } else {
                 if (totalPath.get(i).x > totalPath.get(i - 1).x) {
                     direction = "right";
@@ -157,10 +157,10 @@ public class Main {
                 } else if (totalPath.get(i).y < totalPath.get(i - 1).y) {
                     direction = "up";
                 }
-                System.out.println(i + ". Move " + ANSI_CYAN + direction + ANSI_RESET + " to: (" + totalPath.get(i).x + ", " + totalPath.get(i).y + ")");
+                System.out.println(i + ". Move " + ANSI_CYAN + direction + ANSI_RESET + " to: (" + (totalPath.get(i).x+1) + ", " + (totalPath.get(i).y+1) + ")");
             }
         }
-        System.out.println("> Finishing at: (" + ANSI_RED + finish.x + ", " + finish.y + ANSI_RESET + ")\n");
+        System.out.println("> Finishing at: (" + ANSI_RED + (finish.x+1) + ", " + (finish.y+1) + ANSI_RESET + ")\n");
 
         // Print the total number of moves
         System.out.print("\nTotal moves: " + (totalPath.size() - 1));
