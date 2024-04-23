@@ -21,6 +21,11 @@ public class Node implements Comparable<Node> {
         }
     }
 
+    public static int hCost(Node start, Node finish) {
+        // Calculate the heuristic cost
+        return Math.abs(start.x - finish.x) + Math.abs(start.y - finish.y);
+    }
+
     @Override
     public int compareTo(Node other) {
         // Compare the fScore of the nodes

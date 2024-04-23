@@ -2,6 +2,7 @@ package com.sameerasw.pathfinder;
 
 import java.util.*;
 
+import static com.sameerasw.pathfinder.Node.hCost;
 import static com.sameerasw.pathfinder.PathPrinter.*;
 
 public class Main {
@@ -119,11 +120,6 @@ public class Main {
             direction++;
         }
         return neighbors;
-    }
-
-    private static int hCost(Node start, Node goal) {
-        // Calculate the heuristic cost estimate using the Manhattan distance (x and y coordinate difference)
-        return Math.abs(start.x - goal.x) + Math.abs(start.y - goal.y);
     }
 
     private static void generateFinalPath(Map<Node, Node> history, Node active, Node start, Node finish) {
