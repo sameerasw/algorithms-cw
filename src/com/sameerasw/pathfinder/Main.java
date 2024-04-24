@@ -7,8 +7,9 @@ import static com.sameerasw.pathfinder.PathPrinter.*;
 
 public class Main {
 
-    //-------------debugging purposes only-------------------
-    public static boolean logging = false;
+    //------------display configs for output------------------
+    public static boolean logging = false; // Print the debugging logs
+    public static boolean printMaze = false; // Print the maze with colors
     //-------------------------------------------------------
 
     private static long shortestPath(String[] maze, Node start, Node finish) {
@@ -32,7 +33,7 @@ public class Main {
             if (current.equals(finish)) {
                 // End the timer and reconstruct the path if the finish node is reached
                 long endTime = System.nanoTime();
-                generateFinalPath(history, current, start, finish);
+                generateFinalPath(history, start, finish);
                 return endTime - startTime;
             }
 
@@ -122,11 +123,12 @@ public class Main {
         return neighbors;
     }
 
-    private static void generateFinalPath(Map<Node, Node> history, Node active, Node start, Node finish) {
+    private static void generateFinalPath(Map<Node, Node> history, Node start, Node finish) {
         // Reconstruct the path from the finish node to the start node, 1 will be added to each coordinate to match the maze coordinates
         System.out.println("\nPath found: ");
         List<Node> totalPath = new ArrayList<>();
-        totalPath.add(active);
+        totalPath.add(finish);
+        Node active = finish;
 
         while (history.containsKey(active)) {
             // Add the active node to the totalPath list while backtracking

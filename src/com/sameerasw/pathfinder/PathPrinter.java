@@ -1,5 +1,7 @@
 package com.sameerasw.pathfinder;
 
+import static com.sameerasw.pathfinder.Main.printMaze;
+
 public class PathPrinter {
     // Print the path with colors
     // https://stackoverflow.com/questions/5762491/how-to-print-color-in-console-using-system-out-println
@@ -18,22 +20,22 @@ public class PathPrinter {
         int[] start = new int[0];
         int[] finish = new int[0];
         int[] output;
-        System.out.println(ANSI_RED_BACKGROUND + " ".repeat((arr[0].length() + 2) * 3) + ANSI_RESET);
+        if (printMaze)System.out.println(ANSI_RED_BACKGROUND + " ".repeat((arr[0].length() + 2) * 3) + ANSI_RESET);
 
         for (int i = 0; i < arr.length; i++) {
-            System.out.print(ANSI_RED_BACKGROUND + "   " + ANSI_RESET);
+            if (printMaze)System.out.print(ANSI_RED_BACKGROUND + "   " + ANSI_RESET);
             for (int j = 0; j < arr[i].length(); j++) {
-                printColors(arr[i].charAt(j));
+                if (printMaze)printColors(arr[i].charAt(j));
                 if (arr[i].charAt(j) == 'S') {
                     start = new int[]{j, i};
                 } else if (arr[i].charAt(j) == 'F') {
                     finish = new int[]{j, i};
                 }
             }
-            System.out.print(ANSI_RED_BACKGROUND + "   " + ANSI_RESET + "\n");
+            if (printMaze)System.out.print(ANSI_RED_BACKGROUND + "   " + ANSI_RESET + "\n");
         }
 
-        System.out.println(ANSI_RED_BACKGROUND + " ".repeat((arr[0].length() + 2) * 3) + ANSI_RESET);
+        if (printMaze)System.out.println(ANSI_RED_BACKGROUND + " ".repeat((arr[0].length() + 2) * 3) + ANSI_RESET);
 
         output = new int[]{start[0], start[1], finish[0], finish[1]};
         return output;
