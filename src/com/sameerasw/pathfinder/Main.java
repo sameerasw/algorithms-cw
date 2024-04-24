@@ -91,7 +91,7 @@ public class Main {
 
             if (Node.getNode(new Node(x, y), maze) == 'F') {
                 //if the finish is found, add it to the neighbors list
-                System.out.println("Goal found at x:" + x + " y:" + y);
+                if (logging) System.out.println("Goal found at x:" + x + " y:" + y);
                 neighbors.add(finish);
                 break;
             }
@@ -148,7 +148,7 @@ public class Main {
         String direction = "";
         for (int i = 0; i < totalPath.size(); i++) {
             if (i == 0) {
-                System.out.println("> Starting from: (" + ANSI_GREEN + (totalPath.get(i).x+1) + ", " + (totalPath.get(i).y+1) + ANSI_RESET + ")");
+                System.out.println("> Starting from: (" + ANSI_GREEN + (totalPath.get(i).x + 1) + ", " + (totalPath.get(i).y + 1) + ANSI_RESET + ")");
             } else {
                 if (totalPath.get(i).x > totalPath.get(i - 1).x) {
                     direction = "right";
@@ -159,10 +159,10 @@ public class Main {
                 } else if (totalPath.get(i).y < totalPath.get(i - 1).y) {
                     direction = "up";
                 }
-                System.out.println(i + ". Move " + ANSI_CYAN + direction + ANSI_RESET + " to: (" + (totalPath.get(i).x+1) + ", " + (totalPath.get(i).y+1) + ")");
+                System.out.println(i + ". Move " + ANSI_CYAN + direction + ANSI_RESET + " to: (" + (totalPath.get(i).x + 1) + ", " + (totalPath.get(i).y + 1) + ")");
             }
         }
-        System.out.println("> Finishing at: (" + ANSI_RED + (finish.x+1) + ", " + (finish.y+1) + ANSI_RESET + ")\n");
+        System.out.println("> Finishing at: (" + ANSI_RED + (finish.x + 1) + ", " + (finish.y + 1) + ANSI_RESET + ")\n");
 
         // Print the total number of moves
         System.out.print("\nTotal moves: " + (totalPath.size() - 1));
@@ -176,7 +176,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        System.out.println("Program started.");
+        System.out.println(ANSI_GRAY + "Program started.\nYou can change the configurations in the Main class to enable/disable logging and printing the maze with colors." + ANSI_RESET);
         FileReader fileReader = new FileReader();
         String[] maze = fileReader.readFile();
 
@@ -188,7 +188,7 @@ public class Main {
 
         System.out.println("\nTime taken: " + ANSI_CYAN + ANSI_REVERSED + " " + time / 1000000 + " milliseconds " + ANSI_RESET);
 
-        System.out.println("Program ended.");
+        System.out.println(ANSI_GRAY + "Program ended." + ANSI_RESET);
         System.exit(0);
 
     }

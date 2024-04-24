@@ -14,28 +14,29 @@ public class PathPrinter {
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_BLUE = "\u001B[34m";
     public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_GRAY = "\u001B[37m";
 
     public static int[] printArray(String[] arr) {
         // Print the array with colors and return the start and finish coordinates
         int[] start = new int[0];
         int[] finish = new int[0];
         int[] output;
-        if (printMaze)System.out.println(ANSI_RED_BACKGROUND + " ".repeat((arr[0].length() + 2) * 3) + ANSI_RESET);
+        if (printMaze) System.out.println(ANSI_RED_BACKGROUND + " ".repeat((arr[0].length() + 2) * 3) + ANSI_RESET);
 
         for (int i = 0; i < arr.length; i++) {
-            if (printMaze)System.out.print(ANSI_RED_BACKGROUND + "   " + ANSI_RESET);
+            if (printMaze) System.out.print(ANSI_RED_BACKGROUND + "   " + ANSI_RESET);
             for (int j = 0; j < arr[i].length(); j++) {
-                if (printMaze)printColors(arr[i].charAt(j));
+                if (printMaze) printColors(arr[i].charAt(j));
                 if (arr[i].charAt(j) == 'S') {
                     start = new int[]{j, i};
                 } else if (arr[i].charAt(j) == 'F') {
                     finish = new int[]{j, i};
                 }
             }
-            if (printMaze)System.out.print(ANSI_RED_BACKGROUND + "   " + ANSI_RESET + "\n");
+            if (printMaze) System.out.print(ANSI_RED_BACKGROUND + "   " + ANSI_RESET + "\n");
         }
 
-        if (printMaze)System.out.println(ANSI_RED_BACKGROUND + " ".repeat((arr[0].length() + 2) * 3) + ANSI_RESET);
+        if (printMaze) System.out.println(ANSI_RED_BACKGROUND + " ".repeat((arr[0].length() + 2) * 3) + ANSI_RESET);
 
         output = new int[]{start[0], start[1], finish[0], finish[1]};
         return output;
